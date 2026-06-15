@@ -1,0 +1,199 @@
+class ElfhameSynthesizer {
+  constructor() {
+    this.ctx = null;
+    this.masterGain = null;
+    this.droneGain = null;
+    this.chimeGain = null;
+    this.isPlaying = false;
+    this.oscillators = [];
+    this.harmonyInterval = null;
+    this.currentChords = [
+      [130.81, 155.56, 196.00], // C3, Eb3, G3 (C Minor)
+      [146.83, 174.61, 220.00], // D3, F3, A3 (D Minor/Dim)
+      [116.54, 138.59, 174.61], // Bb2, Db3, F3 (Bb Minor)
+      [103.83, 130.81, 155.56], // Ab2, C3, Eb3 (Ab Major)
+    ];
+    this.currentChordIndex = 0;
+  }
+
+  init() {
+    if (this.ctx) return;
+    
+    // Create Audio Context
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    this.ctx = new AudioContextClass();
+    
+    // Create Master Gain node
+    this.masterGain = this.ctx.createGain();
+    this.masterGain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+    this.masterGain.connect(this.ctx.destination);
+    
+    // Create Sub-Gain nodes
+    this.droneGain = this.ctx.createGain();
+    this.droneGain.gain.setValueAtTime(0.0, this.ctx.currentTime);
+    this.droneGain.connect(this.masterGain);
+    
+    this.chimeGain = this.ctx.createGain();
+    this.chimeGain.gain.setValueAtTime(0.8, this.ctx.currentTime);
+    this.chimeGain.connect(this.masterGain);
+
+    // Setup Reverb / Delay effect node for chimes
+    this.delayNode = this.ctx.createDelay(1.0);
+    this.delayNode.delayTime.setValueAtTime(0.3, this.ctx.currentTime);
+    
+    this.delayFeedback = this.ctx.createGain();
+    this.delayFeedback.gain.setValueAtTime(0.4, this.ctx.currentTime);
+    
+    this.chimeGain.connect(this.delayNode);
+    this.delayNode.connect(this.delayFeedback);
+    this.delayFeedback.connect(this.delayNode);
+    this.delayFeedback.connect(this.masterGain); // Send delay output to master
+  }
+
+  start() {
+    this.init();
+    if (this.isPlaying) return;
+    
+    // Resume context if suspended
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+    
+    this.isPlaying = true;
+    
+    // Fade in Master
+    this.droneGain.gain.linearRampToValueAtTime(0.25, this.ctx.currentTime + 3.0);
+    
+    // Start Ambient Drone oscillators
+    this.startDrone();
+    
+    // Cycle harmonies every 6 seconds
+    this.harmonyInterval = setInterval(() => {
+      this.currentChordIndex = (this.currentChordIndex + 1) % this.currentChords.length;
+      this.updateDroneHarmony();
+      // Occasionally trigger a soft random background chime
+      if (Math.random() > 0.4) {
+        this.playRandomAmbientChime();
+      }
+    }, 6000);
+  }
+
+  stop() {
+    if (!this.isPlaying) return;
+    
+    // Fade out
+    if (this.droneGain) {
+      this.droneGain.gain.linearRampToValueAtTime(0.0, this.ctx.currentTime + 1.5);
+    }
+    
+    setTimeout(() => {
+      this.oscillators.forEach(osc => {
+        try { osc.stop(); } catch(e) {}
+      });
+      this.oscillators = [];
+      clearInterval(this.harmonyInterval);
+      this.isPlaying = false;
+    }, 1500);
+  }
+
+  startDrone() {
+    // Generate low fundamental and fifths
+    const notes = this.currentChords[this.currentChordIndex];
+    notes.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const filter = this.ctx.createBiquadFilter();
+      const oscGain = this.ctx.createGain();
+      
+      osc.type = idx === 0 ? 'sine' : 'triangle';
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+      
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(250 + idx * 50, this.ctx.currentTime);
+      
+      oscGain.gain.setValueAtTime(idx === 0 ? 0.4 : 0.2, this.ctx.currentTime);
+      
+      osc.connect(filter);
+      filter.connect(oscGain);
+      oscGain.connect(this.droneGain);
+      
+      osc.start();
+      this.oscillators.push({ osc, oscGain, baseFreq: freq });
+    });
+  }
+
+  updateDroneHarmony() {
+    if (!this.ctx || this.oscillators.length === 0) return;
+    const newNotes = this.currentChords[this.currentChordIndex];
+    
+    this.oscillators.forEach((oscObj, idx) => {
+      const targetFreq = newNotes[idx] || newNotes[0] * 1.5;
+      oscObj.osc.frequency.exponentialRampToValueAtTime(targetFreq, this.ctx.currentTime + 4.0);
+    });
+  }
+
+  playRandomAmbientChime() {
+    const scale = [523.25, 587.33, 622.25, 698.46, 783.99, 880.00, 932.33, 1046.50]; // C minor pentatonic scale (high notes)
+    const randomFreq = scale[Math.floor(Math.random() * scale.length)];
+    this.triggerPhysicalChime(randomFreq, 0.1, 1.2);
+  }
+
+  playMarkerHover() {
+    if (!this.ctx) return;
+    const scale = [587.33, 783.99, 880.00, 1046.50, 1174.66]; // D, G, A, C, D
+    const freq = scale[Math.floor(Math.random() * scale.length)];
+    this.triggerPhysicalChime(freq, 0.05, 0.4);
+  }
+
+  playMarkerClick() {
+    if (!this.ctx) return;
+    const notes = [440, 554.37, 659.25, 880]; // A Major/Minor arpeggio
+    notes.forEach((freq, idx) => {
+      setTimeout(() => {
+        this.triggerPhysicalChime(freq * 1.5, 0.15, 0.8);
+      }, idx * 80);
+    });
+  }
+
+  triggerPhysicalChime(frequency, gainVal, decayTime) {
+    if (!this.ctx || this.ctx.state === 'suspended') return;
+    
+    const osc = this.ctx.createOscillator();
+    const osc2 = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    const filter = this.ctx.createBiquadFilter();
+    
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(frequency, this.ctx.currentTime);
+    
+    // Add metal ring (inharmonious frequency)
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(frequency * 1.618, this.ctx.currentTime);
+    
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(frequency, this.ctx.currentTime);
+    filter.Q.setValueAtTime(5, this.ctx.currentTime);
+    
+    gain.gain.setValueAtTime(0.001, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(gainVal, this.ctx.currentTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + decayTime);
+    
+    osc.connect(filter);
+    osc2.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.chimeGain);
+    
+    osc.start();
+    osc2.start();
+    
+    osc.stop(this.ctx.currentTime + decayTime + 0.1);
+    osc2.stop(this.ctx.currentTime + decayTime + 0.1);
+  }
+
+  setVolume(volume) {
+    if (!this.masterGain) return;
+    this.masterGain.gain.setValueAtTime(volume, this.ctx.currentTime);
+  }
+}
+
+export const audioSynth = new ElfhameSynthesizer();
+export default audioSynth;
