@@ -5,6 +5,7 @@ import MapScene, { locations } from './components/MapScene';
 import PalaceScene from './components/PalaceScene';
 import CharacterGuide from './components/CharacterGuide';
 import audioSynth from './utils/audio';
+import FairyDust from './components/FairyDust';
 
 export default function App() {
   const [gameState, setGameState] = useState('landing'); // 'landing', 'map', 'zoomed_in'
@@ -157,6 +158,7 @@ export default function App() {
               muted
               playsInline
             />
+            <FairyDust />
             <AnimatePresence>
               {showLandingContent && (
                 <>
@@ -241,6 +243,9 @@ export default function App() {
       {activeScene === 'palace' && (
         <PalaceScene activeScene={activeScene} />
       )}
+
+      {/* Global Fairy Dust overlaying the 3D Scenes */}
+      {gameState !== 'landing' && <FairyDust />}
 
       {/* JUDE DUARTE GUIDE PANEL */}
       <CharacterGuide
@@ -406,7 +411,7 @@ export default function App() {
           backdrop-filter: blur(16px);
           box-shadow: 0 25px 60px rgba(0,0,0,0.9);
           position: relative;
-          z-index: 2;
+          z-index: 10;
         }
 
         .landing-title {
@@ -461,7 +466,7 @@ export default function App() {
           font-size: 0.8rem;
           color: var(--gold-dark);
           letter-spacing: 0.05em;
-          z-index: 2;
+          z-index: 10;
         }
 
         /* HEADER styling */

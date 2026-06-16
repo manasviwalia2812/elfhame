@@ -94,77 +94,6 @@ const getCurveY = (x, y) => {
   return 0.35 * Math.cos((x / 10) * Math.PI) + 0.15 * Math.cos((y / 7.5) * Math.PI);
 };
 
-// Particle System for drifting faerie dust
-function FaerieDust() {
-  const pointsRef = useRef();
-  const count = 400;
-  
-  const [positions, colors] = useMemo(() => {
-    const pos = new Float32Array(count * 3);
-    const col = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 16;      // X
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 12;  // Y
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 8;   // Z
-      
-      const rand = Math.random();
-      if (rand < 0.6) {
-        col[i * 3] = 0.95;     // R
-        col[i * 3 + 1] = 0.85; // G
-        col[i * 3 + 2] = 0.5;  // B
-      } else if (rand < 0.85) {
-        col[i * 3] = 0.06;
-        col[i * 3 + 1] = 0.52;
-        col[i * 3 + 2] = 0.35;
-      } else {
-        col[i * 3] = 0.11;
-        col[i * 3 + 1] = 0.52;
-        col[i * 3 + 2] = 0.52;
-      }
-    }
-    return [pos, col];
-  }, []);
-
-  useFrame((state) => {
-    const time = state.clock.getElapsedTime();
-    const positionsArr = pointsRef.current.geometry.attributes.position.array;
-    
-    for (let i = 0; i < count; i++) {
-      positionsArr[i * 3] += Math.sin(time * 0.4 + i) * 0.003;
-      positionsArr[i * 3 + 1] += Math.cos(time * 0.5 + i) * 0.003;
-      positionsArr[i * 3 + 2] += Math.sin(time * 0.3 + i) * 0.002;
-      
-      if (Math.abs(positionsArr[i * 3]) > 9) positionsArr[i * 3] = (Math.random() - 0.5) * 16;
-      if (Math.abs(positionsArr[i * 3 + 1]) > 6) positionsArr[i * 3 + 1] = (Math.random() - 0.5) * 12;
-      if (Math.abs(positionsArr[i * 3 + 2]) > 5) positionsArr[i * 3 + 2] = (Math.random() - 0.5) * 8;
-    }
-    pointsRef.current.geometry.attributes.position.needsUpdate = true;
-  });
-
-  return (
-    <points ref={pointsRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          args={[positions, 3]}
-        />
-        <bufferAttribute
-          attach="attributes-color"
-          args={[colors, 3]}
-        />
-      </bufferGeometry>
-      <pointsMaterial
-        size={0.12}
-        vertexColors
-        transparent
-        opacity={0.8}
-        blending={THREE.AdditiveBlending}
-        depthWrite={false}
-      />
-    </points>
-  );
-}
-
 // Controls, Transitions, Hover-focusing, and Pan boundaries controller
 function AtlasControls({ selectedLocation, onTransitionComplete, hoveredLocationId }) {
   const { camera } = useThree();
@@ -649,8 +578,7 @@ export default function MapScene({ selectedLocation, onSelectLocation, onTransit
           />
         </group>
         
-        {/* Drifting Faerie Dust */}
-        <FaerieDust />
+
         
         {/* Stars background */}
         <Stars radius={100} depth={50} count={300} factor={4} saturation={0.5} fade speed={1} />
