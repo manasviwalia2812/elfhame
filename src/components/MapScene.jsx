@@ -1,6 +1,6 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useTexture, Stars, Html } from '@react-three/drei';
+import { useTexture, Stars, Html, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import audioSynth from '../utils/audio';
@@ -89,111 +89,54 @@ export const locations = [
   }
 ];
 
-// Custom shader for the map plane to simulate living parchment
-const ParchmentShaderMaterial = {
-  uniforms: {
-    uTexture: { value: null },
-    uTime: { value: 0 },
-    uGlow: { value: 0.5 },
-  },
-  vertexShader: `
-    varying vec2 vUv;
-    varying vec3 vPosition;
-    uniform float uTime;
-    
-    void main() {
-      vUv = uv;
-      vec3 pos = position;
-      // Gentle breathing wave effect across the parchment
-      pos.z += sin(pos.x * 0.6 + uTime * 0.4) * 0.12;
-      pos.z += cos(pos.y * 0.5 + uTime * 0.3) * 0.12;
-      vPosition = pos;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-    }
-  `,
-  fragmentShader: `
-    varying vec2 vUv;
-    varying vec3 vPosition;
-    uniform sampler2D uTexture;
-    uniform float uGlow;
-    
-    void main() {
-      vec4 texColor = texture2D(uTexture, vUv);
-      
-      // Compute vignette based on distance from center
-      float dist = distance(vUv, vec2(0.5));
-      vec3 goldGlow = vec3(0.83, 0.68, 0.21); // gold tint
-      
-      // Apply gold vignette edge tint
-      texColor.rgb = mix(texColor.rgb, goldGlow, dist * 0.2 * uGlow);
-      
-      gl_FragColor = texColor;
-    }
-  `
+// Curvature bending math function for the atlas geometries
+const getCurveY = (x, y) => {
+  return 0.35 * Math.cos((x / 10) * Math.PI) + 0.15 * Math.cos((y / 7.5) * Math.PI);
 };
-
-// Component to handle map parchment rendering
-function MapPlane({ selectedLocation }) {
-  const meshRef = useRef();
-  const mapTexture = useTexture('/elfhame map.jpg');
-  
-  // Custom material ref
-  const materialRef = useRef();
-
-  useEffect(() => {
-    if (materialRef.current) {
-      materialRef.current.uniforms.uTexture.value = mapTexture;
-    }
-  }, [mapTexture]);
-
-  useFrame((state) => {
-    if (materialRef.current) {
-      materialRef.current.uniforms.uTime.value = state.clock.getElapsedTime();
-    }
-  });
-
-  return (
-    <mesh ref={meshRef} rotation={[-Math.PI / 3.2, 0, 0]} receiveShadow>
-      <planeGeometry args={[10, 7.5, 48, 48]} />
-      <shaderMaterial
-        ref={materialRef}
-        args={[ParchmentShaderMaterial]}
-        transparent={true}
-        depthWrite={true}
-      />
-    </mesh>
-  );
-}
 
 // Particle System for drifting faerie dust
 function FaerieDust() {
   const pointsRef = useRef();
-  const count = 350;
+  const count = 400;
   
-  const [positions] = useState(() => {
-    const arr = new Float32Array(count * 3);
+  const [positions, colors] = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    const col = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      arr[i * 3] = (Math.random() - 0.5) * 15;      // X
-      arr[i * 3 + 1] = (Math.random() - 0.5) * 10;  // Y
-      arr[i * 3 + 2] = (Math.random() - 0.5) * 8;   // Z
+      pos[i * 3] = (Math.random() - 0.5) * 16;      // X
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 12;  // Y
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 8;   // Z
+      
+      const rand = Math.random();
+      if (rand < 0.6) {
+        col[i * 3] = 0.95;     // R
+        col[i * 3 + 1] = 0.85; // G
+        col[i * 3 + 2] = 0.5;  // B
+      } else if (rand < 0.85) {
+        col[i * 3] = 0.06;
+        col[i * 3 + 1] = 0.52;
+        col[i * 3 + 2] = 0.35;
+      } else {
+        col[i * 3] = 0.11;
+        col[i * 3 + 1] = 0.52;
+        col[i * 3 + 2] = 0.52;
+      }
     }
-    return arr;
-  });
+    return [pos, col];
+  }, []);
 
   useFrame((state) => {
     const time = state.clock.getElapsedTime();
     const positionsArr = pointsRef.current.geometry.attributes.position.array;
     
     for (let i = 0; i < count; i++) {
-      // Apply organic drift using sine/cosine
-      positionsArr[i * 3] += Math.sin(time + i) * 0.002;
-      positionsArr[i * 3 + 1] += Math.cos(time * 0.7 + i) * 0.002;
-      positionsArr[i * 3 + 2] += Math.sin(time * 0.5 + i) * 0.001;
+      positionsArr[i * 3] += Math.sin(time * 0.4 + i) * 0.003;
+      positionsArr[i * 3 + 1] += Math.cos(time * 0.5 + i) * 0.003;
+      positionsArr[i * 3 + 2] += Math.sin(time * 0.3 + i) * 0.002;
       
-      // Wrap coordinates around boundaries
-      if (Math.abs(positionsArr[i * 3]) > 7.5) positionsArr[i * 3] = (Math.random() - 0.5) * 15;
-      if (Math.abs(positionsArr[i * 3 + 1]) > 5) positionsArr[i * 3 + 1] = (Math.random() - 0.5) * 10;
-      if (Math.abs(positionsArr[i * 3 + 2]) > 4) positionsArr[i * 3 + 2] = (Math.random() - 0.5) * 8;
+      if (Math.abs(positionsArr[i * 3]) > 9) positionsArr[i * 3] = (Math.random() - 0.5) * 16;
+      if (Math.abs(positionsArr[i * 3 + 1]) > 6) positionsArr[i * 3 + 1] = (Math.random() - 0.5) * 12;
+      if (Math.abs(positionsArr[i * 3 + 2]) > 5) positionsArr[i * 3 + 2] = (Math.random() - 0.5) * 8;
     }
     pointsRef.current.geometry.attributes.position.needsUpdate = true;
   });
@@ -205,11 +148,15 @@ function FaerieDust() {
           attach="attributes-position"
           args={[positions, 3]}
         />
+        <bufferAttribute
+          attach="attributes-color"
+          args={[colors, 3]}
+        />
       </bufferGeometry>
       <pointsMaterial
-        size={0.07}
-        color="#f3e5ab" // Pale gold
-        transparent={true}
+        size={0.12}
+        vertexColors
+        transparent
         opacity={0.8}
         blending={THREE.AdditiveBlending}
         depthWrite={false}
@@ -218,119 +165,154 @@ function FaerieDust() {
   );
 }
 
-// Camera controller that performs smooth zooms and mouse parallax
-function CameraController({ selectedLocation, onTransitionComplete }) {
+// Controls, Transitions, Hover-focusing, and Pan boundaries controller
+function AtlasControls({ selectedLocation, onTransitionComplete, hoveredLocationId }) {
   const { camera } = useThree();
-  const mouse = useRef({ x: 0, y: 0 });
-  const targetCamPos = useRef(new THREE.Vector3(0, -3.8, 6.0));
-  const targetLookAt = useRef(new THREE.Vector3(0, 0, 0));
-  const currentLookAt = useRef(new THREE.Vector3(0, 0, 0));
+  const controlsRef = useRef();
+  
+  const isTransitioning = useRef(false);
+  const targetPosition = useRef(new THREE.Vector3(0, -2.8, 6.8));
+  const targetTarget = useRef(new THREE.Vector3(0, 0, 0));
+  
+  const lastInteractionTime = useRef(0);
+  const isInteracting = useRef(false);
+  const hoverTargetOffset = useRef(new THREE.Vector3(0, 0, 0));
 
-  // Handle mouse move for parallax
+  // Initialize camera and target positioning
   useEffect(() => {
-    const handleMouseMove = (e) => {
-      // Normalize to -1 to 1
-      mouse.current.x = (e.clientX / window.innerWidth) * 2 - 1;
-      mouse.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+    camera.position.set(0, -2.8, 6.8);
+    if (controlsRef.current) {
+      controlsRef.current.target.set(0, 0, 0);
+      controlsRef.current.update();
+    }
+  }, [camera]);
 
-  // Handle zooming when selectedLocation changes
+  // Handle selected location changes to animate zoom / overview transitions
   useEffect(() => {
+    const theta = -Math.PI / 2.5; // flatter orientation
+    const cosTheta = Math.cos(theta);
+    const sinTheta = Math.sin(theta);
+
     if (selectedLocation) {
       const loc = locations.find(l => l.id === selectedLocation);
       if (loc) {
-        // Compute 3D coordinate on the tilted plane
-        // Map plane is tilted around X by -Math.PI / 3.2.
-        // Let's project loc.x and loc.y into 3D.
-        const cosTheta = Math.cos(-Math.PI / 3.2);
-        const sinTheta = Math.sin(-Math.PI / 3.2);
-        
-        // Unrotated coords: (x, y, 0).
-        // Rotated around X: X_new = x, Y_new = y * cosTheta, Z_new = y * sinTheta.
+        const pz_local = getCurveY(loc.x, loc.y) + 0.12;
         const px = loc.x;
-        const py = loc.y * cosTheta;
-        const pz = loc.y * sinTheta;
+        const py = loc.y * cosTheta - pz_local * sinTheta;
+        const pz = loc.y * sinTheta + pz_local * cosTheta;
 
-        // Set target camera position (close zoom, looking at the marker)
-        const zoomCamX = px;
-        const zoomCamY = py - 1.2;
-        const zoomCamZ = pz + 1.8;
-
-        gsap.to(camera.position, {
-          x: zoomCamX,
-          y: zoomCamY,
-          z: zoomCamZ,
-          duration: 2.2,
-          ease: 'power3.inOut',
-          onUpdate: () => {
-            // Keep looking at target coordinates during zoom
-            currentLookAt.current.lerp(new THREE.Vector3(px, py, pz), 0.1);
-            camera.lookAt(currentLookAt.current);
-          },
-          onComplete: () => {
-            if (onTransitionComplete) onTransitionComplete();
-          }
-        });
-        targetLookAt.current.set(px, py, pz);
+        targetTarget.current.set(px, py, pz);
+        // Zoom-in position: look down slightly closer
+        targetPosition.current.set(px, py - 1.2, pz + 1.85);
+        isTransitioning.current = true;
       }
     } else {
-      // Zoom out to full map
-      gsap.to(camera.position, {
-        x: 0,
-        y: -3.8,
-        z: 6.0,
-        duration: 2.5,
-        ease: 'power2.inOut',
-        onUpdate: () => {
-          currentLookAt.current.lerp(new THREE.Vector3(0, 0, 0), 0.08);
-          camera.lookAt(currentLookAt.current);
-        }
-      });
-      targetLookAt.current.set(0, 0, 0);
+      // Zoom out to overview
+      targetTarget.current.set(0, 0, 0);
+      targetPosition.current.set(0, -2.8, 6.8);
+      isTransitioning.current = true;
     }
-  }, [selectedLocation, camera, onTransitionComplete]);
+  }, [selectedLocation]);
 
-  // Frame loop for mouse parallax (when NOT zoomed in)
-  useFrame(() => {
-    if (!selectedLocation) {
-      // Standard parallax adjustments
-      const parallaxX = mouse.current.x * 0.8;
-      const parallaxY = mouse.current.y * 0.6;
+  // Handle hover focus offsets
+  useEffect(() => {
+    if (hoveredLocationId && !selectedLocation) {
+      const loc = locations.find(l => l.id === hoveredLocationId);
+      if (loc) {
+        const theta = -Math.PI / 2.5;
+        const cosTheta = Math.cos(theta);
+        const sinTheta = Math.sin(theta);
+        const pz_local = getCurveY(loc.x, loc.y) + 0.12;
+        const px = loc.x;
+        const py = loc.y * cosTheta - pz_local * sinTheta;
+        const pz = loc.y * sinTheta + pz_local * cosTheta;
+
+        // Subtle camera target shift towards hovered location (18% of vector)
+        hoverTargetOffset.current.set(px * 0.18, py * 0.18, pz * 0.18);
+      }
+    } else {
+      hoverTargetOffset.current.set(0, 0, 0);
+    }
+  }, [hoveredLocationId, selectedLocation]);
+
+  const handleControlsChange = () => {
+    lastInteractionTime.current = performance.now();
+  };
+
+  const handleControlsStart = () => {
+    isInteracting.current = true;
+    isTransitioning.current = false; // Immediately interrupt transitions if user drags
+  };
+
+  const handleControlsEnd = () => {
+    isInteracting.current = false;
+    lastInteractionTime.current = performance.now();
+  };
+
+  useFrame((state) => {
+    if (!controlsRef.current) return;
+
+    // 1. Zoom Transition
+    if (isTransitioning.current) {
+      camera.position.lerp(targetPosition.current, 0.06);
+      controlsRef.current.target.lerp(targetTarget.current, 0.06);
+      controlsRef.current.update();
+
+      const distPos = camera.position.distanceTo(targetPosition.current);
+      const distTar = controlsRef.current.target.distanceTo(targetTarget.current);
       
-      camera.position.x = THREE.MathUtils.lerp(camera.position.x, parallaxX, 0.05);
-      camera.position.y = THREE.MathUtils.lerp(camera.position.y, -3.8 + parallaxY, 0.05);
-      camera.position.z = THREE.MathUtils.lerp(camera.position.z, 6.0, 0.05);
+      if (distPos < 0.05 && distTar < 0.05) {
+        isTransitioning.current = false;
+        if (selectedLocation && onTransitionComplete) {
+          onTransitionComplete();
+        }
+      }
+    } else {
+      // 2. Hover focus target slide (only when idle and overview mode)
+      if (!isInteracting.current && !selectedLocation) {
+        const targetT = new THREE.Vector3(0, 0, 0).add(hoverTargetOffset.current);
+        controlsRef.current.target.lerp(targetT, 0.05);
+        controlsRef.current.update();
+      }
       
-      currentLookAt.current.lerp(targetLookAt.current, 0.1);
-      camera.lookAt(currentLookAt.current);
+      // 3. Keep target locked within coordinates box to prevent panning off-screen
+      controlsRef.current.target.x = THREE.MathUtils.clamp(controlsRef.current.target.x, -3.5, 3.5);
+      controlsRef.current.target.y = THREE.MathUtils.clamp(controlsRef.current.target.y, -2.5, 2.5);
+      controlsRef.current.target.z = THREE.MathUtils.clamp(controlsRef.current.target.z, -1.5, 1.5);
     }
   });
 
-  return null;
+  return (
+    <OrbitControls
+      ref={controlsRef}
+      minPolarAngle={Math.PI / 5.1} // 35 degrees
+      maxPolarAngle={Math.PI / 2.1} // 85 degrees
+      minDistance={2.8}
+      maxDistance={11.0}
+      enableDamping={true}
+      dampingFactor={0.05}
+      onChange={handleControlsChange}
+      onStart={handleControlsStart}
+      onEnd={handleControlsEnd}
+    />
+  );
 }
 
 // Interactive Marker component rendered in CSS overlaying R3F coordinates
-function MarkerOverlay({ selectedLocation, onSelectLocation }) {
-  const cosTheta = Math.cos(-Math.PI / 3.2);
-  const sinTheta = Math.sin(-Math.PI / 3.2);
-
+function MarkerOverlay({ selectedLocation, onSelectLocation, onHoverLocation }) {
   return (
     <>
       {locations.map((loc) => {
-        // Rotated position around X axis
         const px = loc.x;
-        const py = loc.y * cosTheta;
-        const pz = loc.y * sinTheta;
+        const py = loc.y;
+        const pz = getCurveY(loc.x, loc.y) + 0.12;
 
         const isCurrent = selectedLocation === loc.id;
 
         return (
           <Html
             key={loc.id}
-            position={[px, py, pz + 0.15]}
+            position={[px, py, pz]}
             center
             distanceFactor={8}
             zIndexRange={[10, 50]}
@@ -345,7 +327,13 @@ function MarkerOverlay({ selectedLocation, onSelectLocation }) {
                 }
               }}
               onMouseEnter={() => {
-                if (!selectedLocation) audioSynth.playMarkerHover();
+                if (!selectedLocation) {
+                  audioSynth.playMarkerHover();
+                  onHoverLocation(loc.id);
+                }
+              }}
+              onMouseLeave={() => {
+                onHoverLocation(null);
               }}
             >
               <div 
@@ -367,52 +355,311 @@ function MarkerOverlay({ selectedLocation, onSelectLocation }) {
   );
 }
 
+// 3D Floating Atlas nested structure
+function FloatingAtlas({ selectedLocation, onSelectLocation, onHoverLocation, activeScene }) {
+  const floatGroupRef = useRef();
+  const mapTexture = useTexture('/elfhame_map.jpeg');
+  
+  const lastInteractionTime = useRef(0);
+  const idleFactor = useRef(1);
+
+  // Monitor general user input events to track idle vs active mode
+  useEffect(() => {
+    const activity = () => {
+      lastInteractionTime.current = performance.now();
+    };
+    window.addEventListener('mousemove', activity);
+    window.addEventListener('mousedown', activity);
+    window.addEventListener('wheel', activity);
+    window.addEventListener('touchstart', activity);
+    
+    return () => {
+      window.removeEventListener('mousemove', activity);
+      window.removeEventListener('mousedown', activity);
+      window.removeEventListener('wheel', activity);
+      window.removeEventListener('touchstart', activity);
+    };
+  }, []);
+
+  // Create rounded rectangle path for the parchment
+  const parchmentShape = useMemo(() => {
+    const w = 10;
+    const h = 7.5;
+    const r = 0.2;
+    const shape = new THREE.Shape();
+    shape.moveTo(-w / 2 + r, -h / 2);
+    shape.lineTo(w / 2 - r, -h / 2);
+    shape.quadraticCurveTo(w / 2, -h / 2, w / 2, -h / 2 + r);
+    shape.lineTo(w / 2, h / 2 - r);
+    shape.quadraticCurveTo(w / 2, h / 2, w / 2 - r, h / 2);
+    shape.lineTo(-w / 2 + r, h / 2);
+    shape.quadraticCurveTo(-w / 2, h / 2, -w / 2, h / 2 - r);
+    shape.lineTo(-w / 2, -h / 2 + r);
+    shape.quadraticCurveTo(-w / 2, -h / 2, -w / 2 + r, -h / 2);
+    return shape;
+  }, []);
+
+  // Create rounded rectangle path for the leather cover
+  const coverShape = useMemo(() => {
+    const w = 10.3;
+    const h = 7.8;
+    const r = 0.25;
+    const shape = new THREE.Shape();
+    shape.moveTo(-w / 2 + r, -h / 2);
+    shape.lineTo(w / 2 - r, -h / 2);
+    shape.quadraticCurveTo(w / 2, -h / 2, w / 2, -h / 2 + r);
+    shape.lineTo(w / 2, h / 2 - r);
+    shape.quadraticCurveTo(w / 2, h / 2, w / 2 - r, h / 2);
+    shape.lineTo(-w / 2 + r, h / 2);
+    shape.quadraticCurveTo(-w / 2, h / 2, -w / 2, h / 2 - r);
+    shape.lineTo(-w / 2, -h / 2 + r);
+    shape.quadraticCurveTo(-w / 2, -h / 2, -w / 2 + r, -h / 2);
+    return shape;
+  }, []);
+
+  // Create a gold border outline (a frame with a hole cut out)
+  const frameShape = useMemo(() => {
+    const outerW = 10.2;
+    const outerH = 7.7;
+    const innerW = 9.75;
+    const innerH = 7.25;
+    const r = 0.22;
+
+    const shape = new THREE.Shape();
+    
+    // Outer frame (CCW)
+    const ow = outerW / 2;
+    const oh = outerH / 2;
+    shape.moveTo(-ow + r, -oh);
+    shape.lineTo(ow - r, -oh);
+    shape.quadraticCurveTo(ow, -oh, ow, -oh + r);
+    shape.lineTo(ow, oh - r);
+    shape.quadraticCurveTo(ow, oh, ow - r, oh);
+    shape.lineTo(-ow + r, oh);
+    shape.quadraticCurveTo(-ow, oh, -ow, oh - r);
+    shape.lineTo(-ow, -oh + r);
+    shape.quadraticCurveTo(-ow, -oh, -ow + r, -oh);
+
+    // Inner cutout hole (CW)
+    const hole = new THREE.Path();
+    const iw = innerW / 2;
+    const ih = innerH / 2;
+    const ir = Math.max(0.01, r - (ow - iw));
+    
+    hole.moveTo(-iw + ir, -ih);
+    hole.quadraticCurveTo(-iw, -ih, -iw, -ih + ir);
+    hole.lineTo(-iw, ih - ir);
+    hole.quadraticCurveTo(-iw, ih, -iw + ir, ih);
+    hole.lineTo(iw - ir, ih);
+    hole.quadraticCurveTo(iw, ih, iw, ih - ir);
+    hole.lineTo(iw, -ih + ir);
+    hole.quadraticCurveTo(iw, -ih, iw - ir, -ih);
+    hole.lineTo(-iw + ir, -ih);
+
+    shape.holes.push(hole);
+    return shape;
+  }, []);
+
+  // Displace and curve flat 3D geometries
+  const bendGeometry = (geometry, zOffset = 0) => {
+    const pos = geometry.attributes.position;
+    const uvs = geometry.attributes.uv;
+    
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i);
+      const y = pos.getY(i);
+      const z = pos.getZ(i);
+      const curve = getCurveY(x, y);
+
+      pos.setZ(i, z + curve + zOffset);
+
+      if (uvs) {
+        const u = (x + 5) / 10;
+        const v = (y + 3.75) / 7.5;
+        uvs.setXY(i, u, v);
+      }
+    }
+    geometry.computeVertexNormals();
+  };
+
+  // Generate Extruded, Curved Geometries
+  const parchmentGeo = useMemo(() => {
+    const geo = new THREE.ExtrudeGeometry(parchmentShape, {
+      depth: 0.08,
+      bevelEnabled: true,
+      bevelThickness: 0.03,
+      bevelSize: 0.03,
+      bevelSegments: 4,
+      curveSegments: 32
+    });
+    bendGeometry(geo, 0);
+    return geo;
+  }, [parchmentShape]);
+
+  const coverGeo = useMemo(() => {
+    const geo = new THREE.ExtrudeGeometry(coverShape, {
+      depth: 0.12,
+      bevelEnabled: true,
+      bevelThickness: 0.04,
+      bevelSize: 0.04,
+      bevelSegments: 4,
+      curveSegments: 32
+    });
+    bendGeometry(geo, -0.14);
+    return geo;
+  }, [coverShape]);
+
+  const frameGeo = useMemo(() => {
+    const geo = new THREE.ExtrudeGeometry(frameShape, {
+      depth: 0.06,
+      bevelEnabled: true,
+      bevelThickness: 0.02,
+      bevelSize: 0.02,
+      bevelSegments: 4,
+      curveSegments: 32
+    });
+    bendGeometry(geo, 0.06);
+    return geo;
+  }, [frameShape]);
+
+  // Frame Loop for dynamic floating and rotation wobble
+  useFrame((state) => {
+    if (!floatGroupRef.current) return;
+    const time = state.clock.getElapsedTime();
+
+    // Determine target idle state based on activity (5 seconds limit)
+    const timeSinceInteraction = performance.now() - lastInteractionTime.current;
+    const targetIdle = (timeSinceInteraction < 5000 || selectedLocation) ? 0 : 1;
+    idleFactor.current = THREE.MathUtils.lerp(idleFactor.current, targetIdle, 0.05);
+
+    // Compute float translations and wobble rotations scaled by the idleFactor
+    const floatY = Math.sin(time * 0.8) * 0.16 * idleFactor.current;
+    const floatZ = Math.cos(time * 0.6) * 0.08 * idleFactor.current;
+
+    const wobbleX = Math.sin(time * 0.5) * 0.02 * idleFactor.current;
+    const wobbleY = Math.cos(time * 0.4) * 0.02 * idleFactor.current;
+    const wobbleZ = Math.sin(time * 0.3) * 0.015 * idleFactor.current;
+
+    // Lerp coordinates
+    floatGroupRef.current.position.x = THREE.MathUtils.lerp(floatGroupRef.current.position.x, 0, 0.05);
+    floatGroupRef.current.position.y = THREE.MathUtils.lerp(floatGroupRef.current.position.y, floatY, 0.05);
+    floatGroupRef.current.position.z = THREE.MathUtils.lerp(floatGroupRef.current.position.z, floatZ, 0.05);
+
+    floatGroupRef.current.rotation.x = THREE.MathUtils.lerp(floatGroupRef.current.rotation.x, wobbleX, 0.05);
+    floatGroupRef.current.rotation.y = THREE.MathUtils.lerp(floatGroupRef.current.rotation.y, wobbleY, 0.05);
+    floatGroupRef.current.rotation.z = THREE.MathUtils.lerp(floatGroupRef.current.rotation.z, wobbleZ, 0.05);
+  });
+
+  return (
+    <group ref={floatGroupRef}>
+      {/* 1. Leather Backing Plate */}
+      <mesh geometry={coverGeo} castShadow receiveShadow>
+        <meshStandardMaterial
+          color="#1c140d"
+          roughness={0.85}
+          metalness={0.1}
+        />
+      </mesh>
+
+      {/* 2. Textured Curved Parchment Page */}
+      <mesh geometry={parchmentGeo} castShadow receiveShadow>
+        <meshStandardMaterial
+          map={mapTexture}
+          color="#fffbf2" // warm light white for optimal readability
+          roughness={0.55} // slightly smoother to bounce lights
+          metalness={0.05}
+        />
+      </mesh>
+
+      {/* 3. Gold Beveled Frame */}
+      <mesh geometry={frameGeo} castShadow receiveShadow>
+        <meshStandardMaterial
+          color="#d4af37"
+          roughness={0.15}
+          metalness={0.9}
+          emissive="#8a6f27"
+          emissiveIntensity={0.25}
+        />
+      </mesh>
+
+      {/* 4. Overlay HTML Markers */}
+      {activeScene === 'map' && (
+        <MarkerOverlay
+          selectedLocation={selectedLocation}
+          onSelectLocation={onSelectLocation}
+          onHoverLocation={onHoverLocation}
+        />
+      )}
+    </group>
+  );
+}
+
 // Main 3D Canvas wrapper
 export default function MapScene({ selectedLocation, onSelectLocation, onTransitionComplete, activeScene }) {
+  const [hoveredLocationId, setHoveredLocationId] = useState(null);
+
   return (
     <div className={`map-canvas-container ${activeScene !== 'map' ? 'dissolve' : ''}`}>
       <Canvas
-        camera={{ position: [0, -3.8, 6.0], fov: 60 }}
+        camera={{ position: [0, -2.8, 6.8], fov: 60 }}
         shadows
         gl={{ antialias: true }}
       >
         <color attach="background" args={['#050709']} />
         
-        {/* Lights */}
-        <ambientLight intensity={0.25} />
+        {/* Linear Fog to keep map crisp while fading background stars */}
+        <fog attach="fog" args={['#050709', 8, 22]} />
+
+        {/* Ambient & Atmosphere Lights */}
+        <ambientLight intensity={0.45} />
+        <hemisphereLight intensity={0.15} color="#ffffff" groundColor="#0c1214" />
+        
         <directionalLight
-          position={[5, 5, 8]}
-          intensity={0.6}
-          color="#d4af37" // warm sun/candle light
+          position={[4, 8, 6]}
+          intensity={1.25}
+          color="#fff2cc" // brighter warm candle highlight
+          castShadow
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          shadow-bias={-0.0001}
+        />
+        
+        <directionalLight
+          position={[-6, -4, 4]}
+          intensity={0.4}
+          color="#a1c4fd" // cool moonlight fill
+        />
+        
+        <spotLight
+          position={[0, 4, 8]}
+          intensity={1.8}
+          angle={Math.PI / 3.5}
+          penumbra={0.8}
+          color="#fbe7b2"
           castShadow
         />
-        <directionalLight
-          position={[-5, -2, 4]}
-          intensity={0.4}
-          color="#b0c4de" // cool moonlight
-        />
         
-        {/* Living Map Plane */}
-        <MapPlane selectedLocation={selectedLocation} />
-        
-        {/* Particles / Dust */}
-        <FaerieDust />
-        
-        {/* Starfield background */}
-        <Stars radius={100} depth={50} count={300} factor={4} saturation={0.5} fade speed={1} />
-        
-        {/* Markers Overlay */}
-        {activeScene === 'map' && (
-          <MarkerOverlay
+        {/* Base tilted group: Flatter 72 degrees top-down perspective layout */}
+        <group rotation={[-Math.PI / 2.5, 0, 0]}>
+          <FloatingAtlas
             selectedLocation={selectedLocation}
             onSelectLocation={onSelectLocation}
+            onHoverLocation={setHoveredLocationId}
+            activeScene={activeScene}
           />
-        )}
+        </group>
         
-        {/* Camera transitions */}
-        <CameraController
+        {/* Drifting Faerie Dust */}
+        <FaerieDust />
+        
+        {/* Stars background */}
+        <Stars radius={100} depth={50} count={300} factor={4} saturation={0.5} fade speed={1} />
+        
+        {/* Interactive Exploration Controls & Transitions */}
+        <AtlasControls
           selectedLocation={selectedLocation}
           onTransitionComplete={onTransitionComplete}
+          hoveredLocationId={hoveredLocationId}
         />
       </Canvas>
 
