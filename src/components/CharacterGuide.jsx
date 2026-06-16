@@ -8,6 +8,11 @@ const dialogueData = {
     text: "You step into a land of dangerous beauty, ancient secrets, and blood-soaked crowns. I am Jude Duarte. If you want to survive the faerie courts, listen closely: never eat their fruit, never dance in their circles, and never, ever make a bargain you cannot afford.",
     quote: '"If I cannot be better than them, I will become so much worse."'
   },
+  book: {
+    greeting: "The Chronicles of Elfhame",
+    text: "You hold the enchanted living atlas. Turn these pages to unlock the secrets of the Courts, the Folk, and the ancient Magic. When you are ready, step directly into the map to explore.",
+    quote: '"I want to win. I do not yearn to be good."'
+  },
   map: {
     greeting: "The Lands of Elfhame",
     text: "Before you lies the enchanted atlas. Select a location to travel. Each estate holds its own traps and royal alliances. Keep your hand on your hilt.",
