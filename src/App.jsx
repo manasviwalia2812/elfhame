@@ -13,6 +13,16 @@ export default function App() {
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [volume, setVolume] = useState(0.35);
   const [showHelp, setShowHelp] = useState(false);
+  const [showLandingContent, setShowLandingContent] = useState(false);
+
+  useEffect(() => {
+    if (gameState === 'landing') {
+      const timer = setTimeout(() => {
+        setShowLandingContent(true);
+      }, 4500); // 4.5 seconds delay
+      return () => clearTimeout(timer);
+    }
+  }, [gameState]);
 
   // Manage Web Audio initialization and toggles
   const handleToggleAudio = () => {
@@ -139,31 +149,50 @@ export default function App() {
             exit={{ opacity: 0 }}
             transition={{ duration: 2 }}
           >
-            <div className="landing-content gothic-border">
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 1.8, ease: 'easeOut' }}
-              >
-                <h1 className="landing-title">ELFHAME</h1>
-                <div className="landing-divider" />
-                <p className="landing-tagline">
-                  "If I cannot be better than them, I will become so much worse."
-                </p>
-                <p className="landing-intro">
-                  You stand at the border of the mortal world and the faerie courts. 
-                  A world of glassmorphic magic, silver promises, emerald poisons, and royal betrayal. 
-                  Open the enchanted atlas and claim your place in the court.
-                </p>
-                <button className="btn-fantasy btn-enter glow-gold" onClick={handleStart}>
-                  ENTER THE COURT
-                </button>
-              </motion.div>
-            </div>
-            
-            <div className="landing-footer">
-              Inspired by Holly Black's <i>The Cruel Prince</i> Trilogy.
-            </div>
+            <video
+              className="landing-video"
+              src="/environment/entrytoelfhame.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
+            <AnimatePresence>
+              {showLandingContent && (
+                <>
+                  <motion.div 
+                    className="landing-content gothic-border"
+                    initial={{ opacity: 0, y: 35, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                    transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <h1 className="landing-title">ELFHAME</h1>
+                    <div className="landing-divider" />
+                    <p className="landing-tagline">
+                      "If I cannot be better than them, I will become so much worse."
+                    </p>
+                    <p className="landing-intro">
+                      You stand at the border of the mortal world and the faerie courts. 
+                      A world of glassmorphic magic, silver promises, emerald poisons, and royal betrayal. 
+                      Open the enchanted atlas and claim your place in the court.
+                    </p>
+                    <button className="btn-fantasy btn-enter glow-gold" onClick={handleStart}>
+                      ENTER THE COURT
+                    </button>
+                  </motion.div>
+
+                  <motion.div 
+                    className="landing-footer"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 1, delay: 0.5 }}
+                  >
+                    Inspired by Holly Black's <i>The Cruel Prince</i> Trilogy.
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
@@ -347,23 +376,37 @@ export default function App() {
           left: 0;
           width: 100%;
           height: 100%;
-          background: radial-gradient(circle at 50% 50%, #0c1218 0%, #030406 100%);
+          background: #000;
           z-index: 99;
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
           padding: 20px;
+          overflow: hidden;
+        }
+
+        .landing-video {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          z-index: 1;
+          opacity: 0.65;
         }
 
         .landing-content {
-          background: rgba(11, 15, 20, 0.88);
+          background: rgba(7, 10, 14, 0.55);
           border: 1px solid var(--gold-dark);
           padding: 45px 60px;
           max-width: 700px;
           text-align: center;
-          backdrop-filter: blur(12px);
-          box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+          backdrop-filter: blur(16px);
+          box-shadow: 0 25px 60px rgba(0,0,0,0.9);
+          position: relative;
+          z-index: 2;
         }
 
         .landing-title {
@@ -418,6 +461,7 @@ export default function App() {
           font-size: 0.8rem;
           color: var(--gold-dark);
           letter-spacing: 0.05em;
+          z-index: 2;
         }
 
         /* HEADER styling */
