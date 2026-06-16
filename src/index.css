@@ -1,3 +1,8 @@
+@font-face {
+  font-family: 'RusticRoadway';
+  src: url('/fonts/RusticRoadway.otf') format('opentype');
+}
+
 :root {
   /* Color Palette */
   --bg-dark: #07090b;
@@ -598,6 +603,10 @@ h1, h2, h3, h4, h5, h6 {
   padding: 20px;
   transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1);
   transform-origin: center center;
+  background-image: url('/environment/vintage_study_bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .book-container-root.zoom-out {
@@ -719,5 +728,121 @@ h1, h2, h3, h4, h5, h6 {
   .quick-nav-bar {
     display: none;
   }
+}
+
+/* Ornate vintage page borders */
+.vintage-page-border {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+  border: 1.5px solid rgba(138, 111, 39, 0.55);
+  pointer-events: none;
+  border-radius: 4px;
+  z-index: 10;
+}
+
+.vintage-page-border::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  border: 0.5px solid rgba(138, 111, 39, 0.3);
+  border-radius: 2px;
+}
+
+.vintage-corner {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a6f27' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M2,2 L18,2 C12,4 4,12 2,18 Z'/><path d='M5,5 L14,5 C10,6 6,10 5,14 Z'/><circle cx='2.5' cy='2.5' r='1' fill='%238a6f27'/></svg>");
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.vintage-corner.top-left { top: -2px; left: -2px; }
+.vintage-corner.top-right { top: -2px; right: -2px; transform: rotate(90deg); }
+.vintage-corner.bottom-left { bottom: -2px; left: -2px; transform: rotate(-90deg); }
+.vintage-corner.bottom-right { bottom: -2px; right: -2px; transform: rotate(180deg); }
+
+/* Custom Font & Color stylings for the BookAtlas scoped within .book-wrapper */
+.book-wrapper h2.chapter-headline {
+  font-family: 'RusticRoadway', 'Cinzel', serif !important;
+  color: #800e13 !important;
+  font-size: 1.80rem;
+  text-shadow: 0.5px 0.5px 0px rgba(0, 0, 0, 0.15);
+}
+
+.book-wrapper h3 {
+  font-family: 'RusticRoadway', 'Cinzel', serif !important;
+  color: #800e13 !important;
+  font-size: 1.45rem;
+  text-shadow: 0.5px 0.5px 0px rgba(0, 0, 0, 0.15);
+  margin-bottom: 0.5rem;
+}
+
+.book-wrapper .chapter-label {
+  font-family: 'RusticRoadway', 'Cinzel', serif !important;
+  color: #8a6f27 !important;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.book-wrapper ul li {
+  font-family: 'RusticRoadway', 'Cinzel', serif !important;
+  color: #3d2f1f !important;
+  font-size: 0.8rem !important;
+  margin-bottom: 4px !important;
+}
+
+/* Styling for right-side page elements in the BookAtlas */
+.book-page-front,
+.book-page-front p,
+.book-page-front span,
+.book-page-front h2,
+.book-page-front h3,
+.book-page-front h4,
+.book-page-front h5,
+.book-page-front h6 {
+  font-family: 'RusticRoadway', 'Cinzel', serif !important;
+}
+
+.book-page-front p {
+  font-size: 0.82rem !important;
+  line-height: 1.4 !important;
+  color: #3d2f1f !important;
+}
+
+/* Responsive positioning of inside page content */
+.left-page-content-vintage {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100%;
+  text-align: center;
+  padding-top: 4.5vh; /* Shift left chronicles headings to the top a little */
+}
+
+.chapter-details-vintage {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-top: 6vh; /* Shift right headings/content to the bottom a little */
+}
+
+.chapter-cover-vintage {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100%;
+  text-align: center;
+  padding-top: 6vh; /* Shift right cover pages to the bottom a little */
 }
 

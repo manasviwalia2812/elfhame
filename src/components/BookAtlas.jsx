@@ -68,6 +68,10 @@ export default function BookAtlas({ setGlobalLocation }) {
     }
   }, [currentPage, coverTurned, setGlobalLocation]);
 
+  useEffect(() => {
+    console.log("CURRENT PAGE:", currentPage);
+  }, [currentPage]);
+
   const gameStateForGuide = () => {
     if (!coverTurned) return 'landing';
     return 'book';
@@ -75,50 +79,50 @@ export default function BookAtlas({ setGlobalLocation }) {
 
   // Cinematic Y-rotation animation (Backcover to Frontcover) on first load
   useEffect(() => {
-    console.log("INTRO EFFECT RUN");
+    //console.log("INTRO EFFECT RUN");
 
     const t1 = setTimeout(() => {
-      console.log("ROTATING BOOK");
+      //console.log("ROTATING BOOK");
       setBookRotation(0);
     }, 2500);
 
     const t2 = setTimeout(() => {
-      console.log("INTRO FINISHED");
+      //console.log("INTRO FINISHED");
       setIsIntroAnimating(false);
     }, 2700);
 
     return () => {
-      console.log("INTRO CLEANUP");
+     // console.log("INTRO CLEANUP");
     };
   }, []);
 
   useEffect(() => {
-    console.log(
-      "INTRO CHANGED:",
-      isIntroAnimating
-    );
+    // console.log(
+    //   "INTRO CHANGED:",
+    //   isIntroAnimating
+    // );
   }, [isIntroAnimating]);
   useEffect(() => {
-    console.log(
-      "BOOK ROTATION:",
-      bookRotation
-    );
+    // console.log(
+    //   "BOOK ROTATION:",
+    //   bookRotation
+    // );
   }, [bookRotation]);
 
   useEffect(() => {
-    console.log("coverTurned changed:", coverTurned);
+    //console.log("coverTurned changed:", coverTurned);
   }, [coverTurned]);
 
   // Flip sheets programmatically
   const handlePageTurn = (index, direction) => {
     if (isIntroAnimating) return;
-    console.log(
-      "TURN PAGE",
-      index,
-      direction
-    );
+    // console.log(
+    //   "TURN PAGE",
+    //   index,
+    //   direction
+    // );
 
-    console.log('flip sheets programmatically');
+    //console.log('flip sheets programmatically');
 
     if (direction === 'next') {
       setPageStates((prev) => {
@@ -155,12 +159,12 @@ export default function BookAtlas({ setGlobalLocation }) {
 
   // Open the book from closed front cover
   const handleOpenBook = () => {
-    console.log("OPEN BOOK CLICKED");
-    console.log("isIntroAnimating:", isIntroAnimating);
-    console.log("coverTurned before:", coverTurned);
+    // console.log("OPEN BOOK CLICKED");
+    // console.log("isIntroAnimating:", isIntroAnimating);
+    // console.log("coverTurned before:", coverTurned);
 
     if (isIntroAnimating) {
-      console.log("BLOCKED BY isIntroAnimating");
+      // console.log("BLOCKED BY isIntroAnimating");
       return;
     }
     if (isIntroAnimating) return;
@@ -187,20 +191,32 @@ export default function BookAtlas({ setGlobalLocation }) {
 
   // Close the book cover and reset to front page from the end of the book
   const handleReturnToFront = () => {
+    console.log("RETURN TO FRONT CLICKED");
     audioSynth.playMarkerClick();
+
     setIsIntroAnimating(true);
 
-    // Flip all pages to the left
-    setPageStates((prev) => {
-      return prev.map((ps, i) => ({ turned: true, zIndex: 10 + i }));
-    });
-    setCurrentPage(0);
+    for (let i = NUM_PAGES - 1; i >= 0; i--) {
+      setTimeout(() => {
+        setPageStates(prev => {
+          const next = [...prev];
 
-    // Close the cover
+          next[i] = {
+            ...next[i],
+            turned: false,
+            zIndex: 20 - i,
+          };
+
+          return next;
+        });
+      }, (NUM_PAGES - i) * 400);
+    }
+
     setTimeout(() => {
+      setCurrentPage(0);
       setCoverTurned(false);
       setIsIntroAnimating(false);
-    }, 1000);
+    }, NUM_PAGES * 400 + 2200);
   };
 
   // Navigate to full screen scenes with zoom scaling transitions
@@ -241,9 +257,39 @@ export default function BookAtlas({ setGlobalLocation }) {
         
         <div style={{
           ...styles.coverRightUnder,
+          backgroundImage: (currentPage === NUM_PAGES) ? "url('/src/assets/bookcover/backcover.png')" : "url('/src/assets/bookcover/frontcover.png')",
+          backgroundSize: "cover",
           opacity: isClosed ? 0 : 1,
-          transition: "opacity 0.6s ease-in-out",
-        }} />
+          transition: "backgroundImage 0.6s ease-in-out, opacity 0.6s ease-in-out",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "2.5rem",
+          color: "#2c2419",
+          textAlign: "center",
+        }}>
+          {currentPage === NUM_PAGES && !isClosed && (
+            <>
+              <div className="vintage-page-border">
+                <div className="vintage-corner top-left"></div>
+                <div className="vintage-corner top-right"></div>
+                <div className="vintage-corner bottom-left"></div>
+                <div className="vintage-corner bottom-right"></div>
+              </div>
+              
+              <div className="chapter-cover-vintage" style={{ zIndex: 11, padding: '1rem', width: '100%' }}>
+                <span className="chapter-label" style={{ color: '#8a6f27' }}>THE END OF THE JOURNEY</span>
+                <h2 className="chapter-headline" style={{ color: '#800e13', fontSize: '1.45rem', marginBottom: '15px' }}>THE BACK COVER</h2>
+                <div className="landing-divider" style={{ margin: '10px auto' }} />
+                <p className="chapter-desc" style={{ fontSize: '0.85rem', color: '#3d2f1f', fontStyle: 'italic', marginBottom: '20px' }}>
+                  "If you hurt me, I will find a way to hurt you back. Twice as hard."
+                </p>
+                
+              </div>
+            </>
+          )}
+        </div>
 
         {/* Dynamic cover (rotates open or closed) */}
         <div
@@ -262,28 +308,37 @@ export default function BookAtlas({ setGlobalLocation }) {
           {/* Inside Cover: rendered as a gorgeous parchment page when open */}
           <div style={{
             ...styles.coverRightBack,
-            backgroundImage: isClosed ? "url('/src/assets/bookcover/backcover.png')" : "none",
+            backgroundImage: isClosed ? "url('/src/assets/bookcover/backcover.png')" : "url('/environment/vintage_parchment_page.png')",
             backgroundColor: isClosed ? "transparent" : "#fff2df",
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}>
             {!isClosed && (
-              <div style={styles.leftPageContent}>
-                <h2 className="chapter-headline"  style={{ marginBottom: '1rem' }}>THE CHRONICLES OF ELFHAME</h2>
+              <>
+                <div className="vintage-page-border">
+                  <div className="vintage-corner top-left"></div>
+                  <div className="vintage-corner top-right"></div>
+                  <div className="vintage-corner bottom-left"></div>
+                  <div className="vintage-corner bottom-right"></div>
+                </div>
+                <div className="left-page-content-vintage">
+                  <h2 className="chapter-headline"  style={{ marginBottom: '0.4rem' }}>THE CHRONICLES OF ELFHAME</h2>
 
-                <ul style={{
-                  listStyle: 'none',
-                  padding: 0,
-                  lineHeight: '2'
-                }}>
-                  <li>Chapter I — The Realm</li>
-                  <li>Chapter II — The Courts</li>
-                  <li>Chapter III — The Folk</li>
-                  <li>Chapter IV — The Magic</li>
-                  <li>Chapter V — The Story</li>
-                  <li>Chapter VI — The Heart</li>
-                </ul>
-              </div>
+                  <ul style={{
+                    listStyle: 'none',
+                    padding: 0,
+                    lineHeight: '1.2'
+                  }}>
+                    <li>Chapter I — The Realm</li>
+                    <li>Chapter II — The Courts</li>
+                    <li>Chapter III — The Folk</li>
+                    <li>Chapter IV — The Magic</li>
+                    <li>Chapter V — The Story</li>
+                    <li>Chapter VI — The Heart</li>
+                  </ul>
+
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -310,11 +365,17 @@ export default function BookAtlas({ setGlobalLocation }) {
               }}
             >
               {/* Sheet FRONT face (stands on the right) */}
-              <div style={styles.pageFront}>
+              <div style={styles.pageFront} className="book-page-front">
+                <div className="vintage-page-border">
+                  <div className="vintage-corner top-left"></div>
+                  <div className="vintage-corner top-right"></div>
+                  <div className="vintage-corner bottom-left"></div>
+                  <div className="vintage-corner bottom-right"></div>
+                </div>
                 
                 {/* --- CHAPTER I: THE REALM (RIGHT SPREAD) --- */}
                 {i === 0 && (
-                  <div style={styles.chapterDetails}>
+                  <div className="chapter-details-vintage">
                     <h3>THE LIVING MAP</h3>
                     <div className="sidebar-divider" />
                     <p style={{ fontSize: '0.85rem', lineHeight: '1.4', opacity: 0.8 }}>
@@ -323,15 +384,23 @@ export default function BookAtlas({ setGlobalLocation }) {
                     <p style={{ fontSize: '0.85rem', lineHeight: '1.4', opacity: 0.8 }}>
                       Navigate through Castle Elfhame, Locke's decadent ruins, the dangerous deep of the Undersea, or trade poisons in the Goblin market stalls.
                     </p>
-                    <p style={{ fontSize: '0.85rem', fontStyle: 'italic', marginTop: '15px' }}>
-                      (Click the EXPLORE button on the left page to enter full-screen parallax map)
+                    <button 
+                      className="btn-fantasy glow-gold" 
+                      style={{ marginTop: '15px', fontSize: '0.8rem', width: 'fit-content', alignSelf: 'center' }}
+                      onClick={navigateToMap}
+                      disabled={isIntroAnimating}
+                    >
+                      🗺️ EXPLORE ELFHAME
+                    </button>
+                    <p style={{ fontSize: '0.75rem', fontStyle: 'italic', marginTop: '10px', textAlign: 'center', opacity: 0.6 }}>
+                      (Or click the EXPLORE button on the left page)
                     </p>
                   </div>
                 )}
 
                 {/* --- CHAPTER II: THE COURTS (RIGHT SPREAD) --- */}
                 {i === 1 && (
-                  <div style={styles.chapterDetails}>
+                  <div className="chapter-details-vintage">
                     <h3>THE HIGH COURT</h3>
                     <div className="sidebar-divider" />
                     <p>
@@ -348,7 +417,7 @@ export default function BookAtlas({ setGlobalLocation }) {
 
                 {/* --- CHAPTER III: THE FOLK (RIGHT SPREAD) --- */}
                 {i === 2 && (
-                  <div style={styles.chapterCover}>
+                  <div className="chapter-cover-vintage">
                     <span className="chapter-label">CHAPTER III</span>
                     <h2 className="chapter-headline">THE FOLK</h2>
                     <div className="landing-divider" style={{ margin: '15px auto' }} />
@@ -362,7 +431,7 @@ export default function BookAtlas({ setGlobalLocation }) {
 
                 {/* --- CHAPTER IV: THE MAGIC (RIGHT SPREAD) --- */}
                 {i === 3 && (
-                  <div style={styles.chapterCover}>
+                  <div className="chapter-cover-vintage">
                     <span className="chapter-label">CHAPTER IV</span>
                     <h2 className="chapter-headline">THE MAGIC</h2>
                     <div className="landing-divider" style={{ margin: '15px auto' }} />
@@ -376,7 +445,7 @@ export default function BookAtlas({ setGlobalLocation }) {
 
                 {/* --- CHAPTER V: THE STORY (RIGHT SPREAD) --- */}
                 {i === 4 && (
-                  <div style={styles.chapterCover}>
+                  <div className="chapter-cover-vintage">
                     <span className="chapter-label">CHAPTER V</span>
                     <h2 className="chapter-headline">THE STORY</h2>
                     <div className="landing-divider" style={{ margin: '15px auto' }} />
@@ -390,7 +459,7 @@ export default function BookAtlas({ setGlobalLocation }) {
 
                 {/* --- CHAPTER VI: THE HEART (RIGHT SPREAD) --- */}
                 {i === 5 && (
-                  <div style={styles.chapterCover}>
+                  <div className="chapter-cover-vintage">
                     <span className="chapter-label">CHAPTER VI</span>
                     <h2 className="chapter-headline">THE HEART</h2>
                     <div className="landing-divider" style={{ margin: '15px auto' }} />
@@ -403,7 +472,7 @@ export default function BookAtlas({ setGlobalLocation }) {
                 )}
 
                 {/* Next arrow navigation on front pages */}
-                {i < NUM_PAGES - 1 && !isIntroAnimating && (
+                {i < NUM_PAGES && !isIntroAnimating && (
                   <button
                     onClick={() => handlePageTurn(i, 'next')}
                     style={styles.navBtn}
@@ -415,11 +484,17 @@ export default function BookAtlas({ setGlobalLocation }) {
               </div>
 
               {/* Sheet BACK face (stands on the left) */}
-              <div style={styles.pageBack}>
+              <div style={styles.pageBack} className="book-page-back">
+                <div className="vintage-page-border">
+                  <div className="vintage-corner top-left"></div>
+                  <div className="vintage-corner top-right"></div>
+                  <div className="vintage-corner bottom-left"></div>
+                  <div className="vintage-corner bottom-right"></div>
+                </div>
                 
                 {/* --- CHAPTER II: THE COURTS (LEFT SPREAD) --- */}
                 {i === 0 && (
-                  <div style={styles.leftPageContent}>
+                  <div className="left-page-content-vintage">
                     <span className="chapter-label">CHAPTER II</span>
                     <h2 className="chapter-headline">THE COURTS</h2>
                     <div className="landing-divider" style={{ margin: '15px auto' }} />
@@ -442,7 +517,7 @@ export default function BookAtlas({ setGlobalLocation }) {
 
                 {/* --- CHAPTER III: THE FOLK (LEFT SPREAD) --- */}
                 {i === 1 && (
-                  <div style={styles.chapterCover}>
+                  <div className="chapter-cover-vintage">
                     <span className="chapter-label">CHAPTER III</span>
                     <h2 className="chapter-headline">THE FOLK</h2>
                     <div className="landing-divider" style={{ margin: '15px auto' }} />
@@ -455,7 +530,7 @@ export default function BookAtlas({ setGlobalLocation }) {
 
                 {/* --- CHAPTER IV: THE MAGIC (LEFT SPREAD) --- */}
                 {i === 2 && (
-                  <div style={styles.chapterCover}>
+                  <div className="chapter-cover-vintage">
                     <span className="chapter-label">CHAPTER IV</span>
                     <h2 className="chapter-headline">THE MAGIC</h2>
                     <div className="landing-divider" style={{ margin: '15px auto' }} />
@@ -468,7 +543,7 @@ export default function BookAtlas({ setGlobalLocation }) {
 
                 {/* --- CHAPTER V: THE STORY (LEFT SPREAD) --- */}
                 {i === 3 && (
-                  <div style={styles.chapterCover}>
+                  <div className="chapter-cover-vintage">
                     <span className="chapter-label">CHAPTER V</span>
                     <h2 className="chapter-headline">THE STORY</h2>
                     <div className="landing-divider" style={{ margin: '15px auto' }} />
@@ -481,7 +556,7 @@ export default function BookAtlas({ setGlobalLocation }) {
 
                 {/* --- CHAPTER VI: THE HEART (LEFT SPREAD) --- */}
                 {i === 4 && (
-                  <div style={styles.chapterCover}>
+                  <div className="chapter-cover-vintage">
                     <span className="chapter-label">CHAPTER VI</span>
                     <h2 className="chapter-headline">THE HEART</h2>
                     <div className="landing-divider" style={{ margin: '15px auto' }} />
@@ -494,21 +569,13 @@ export default function BookAtlas({ setGlobalLocation }) {
 
                 {/* --- END OF BOOK / RETURN TO FRONT COVER (LEFT SPREAD) --- */}
                 {i === 5 && (
-                  <div style={styles.chapterCover}>
+                  <div className="chapter-cover-vintage">
                     <span className="chapter-label">PROLOGUE & EPILOGUE</span>
                     <h2 className="chapter-headline" style={{ fontSize: '1.35rem' }}>THE END OF THE ATLAS</h2>
                     <div className="landing-divider" style={{ margin: '15px auto' }} />
                     <p className="chapter-desc" style={{ fontSize: '0.82rem', opacity: 0.8, fontStyle: 'italic' }}>
                       "We have spoken of the dead. Now let us speak of the living."
                     </p>
-                    <button 
-                      className="btn-fantasy glow-gold" 
-                      style={{ marginTop: '15px', fontSize: '0.8rem' }}
-                      onClick={handleReturnToFront}
-                      disabled={isIntroAnimating}
-                    >
-                      📖 CLOSE ATLAS & RETURN
-                    </button>
                   </div>
                 )}
 
@@ -529,7 +596,7 @@ export default function BookAtlas({ setGlobalLocation }) {
       </div>
 
       {/* Manual flip prompt when book is closed showing frontcover */}
-      {console.log(
+      {/* {console.log(
         "BUTTON CHECK",
         {
           isClosed,
@@ -545,7 +612,24 @@ export default function BookAtlas({ setGlobalLocation }) {
           bookRotation,
           coverTurned
         }
-      )}
+      )} */}
+      {currentPage === NUM_PAGES &&
+        !isClosed &&
+        !isIntroAnimating && (
+          <button
+            className="btn-fantasy glow-gold"
+            onClick={handleReturnToFront}
+            style={{
+              position: "absolute",
+              bottom: "30px",
+              right: "40px",
+              zIndex: 9999,
+              pointerEvents: 'auto'
+            }}
+          >
+            📖 RETURN TO FRONT PAGE
+          </button>
+        )}
       {isClosed && !isIntroAnimating && (
         <button className="btn-fantasy btn-open-atlas glow-gold" onClick={handleOpenBook}>
           📖 OPEN ENCHANTED ATLAS
@@ -582,6 +666,7 @@ const styles = {
     borderTopRightRadius: "0.6rem",
     borderBottomRightRadius: "0.6rem",
     zIndex: -2,
+    PointerEvents: "none",
     boxShadow: "inset 0 0 100px rgba(0,0,0,0.5)",
   },
   coverRight: {
@@ -636,7 +721,8 @@ const styles = {
     left: 0,
     width: "50%",
     height: "100%",
-    background: "linear-gradient(90deg, #fff2df, #f4e7d3)",
+    backgroundImage: "url('/environment/vintage_parchment_page.png')",
+    backgroundSize: "cover",
     borderRight: "1px solid rgba(0,0,0,0.15)",
     boxShadow: "-0.6rem 0.6rem 1.5rem rgba(0,0,0,0.3)",
     padding: "2.5rem",
@@ -697,7 +783,8 @@ const styles = {
     left: 0,
     width: "100%",
     height: "100%",
-    background: "linear-gradient(90deg, #fff2df, #f4e7d3)",
+    backgroundImage: "url('/environment/vintage_parchment_page.png')",
+    backgroundSize: "cover",
     transform: "rotateY(0deg) translateZ(1px)",
     backfaceVisibility: "hidden",
     padding: "2.5rem",
@@ -714,7 +801,8 @@ const styles = {
     left: 0,
     width: "100%",
     height: "100%",
-    background: "linear-gradient(270deg, #fff2df, #f4e7d3)",
+    backgroundImage: "url('/environment/vintage_parchment_page.png')",
+    backgroundSize: "cover",
     transform: "rotateY(180deg) translateZ(1px)",
     backfaceVisibility: "hidden",
     padding: "2.5rem",
