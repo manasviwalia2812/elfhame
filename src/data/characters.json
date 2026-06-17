@@ -1,0 +1,112 @@
+[
+  {
+    "id": "jude",
+    "name": "Jude Duarte",
+    "titles": ["High Queen of Elfhame", "Seneschal to the King", "Knight of the Court of Shadows"],
+    "age": "18",
+    "species": "Mortal (Human)",
+    "residence": "Palace of Elfhame (formerly Hollow Hall)",
+    "image": "/characters/jude/jude.png",
+    "background": "Jude was taken to Elfhame as a child by Madoc, who murdered her parents. Growing up as a mortal among cruel faeries, she learned to fight, plan, and lie to survive. She eventually became the seneschal to King Cardan and later the High Queen.",
+    "summary": "Jude is a fierce, ambitious, and highly resilient mortal who refuses to be subservient to faeries. She is skilled in combat and poison, and plays the game of court intrigue with cold-hearted precision."
+  },
+  {
+    "id": "cardan",
+    "name": "Cardan Greenbriar",
+    "titles": ["High King of Elfhame", "Prince of the High Court"],
+    "age": "19",
+    "species": "Faerie (High Fae)",
+    "residence": "Palace of Elfhame (formerly Hollow Hall)",
+    "image": "/characters/cardan/cardan.png",
+    "background": "Cardan is the youngest son of King Eldred. He was neglected and mistreated by his siblings, leading him to develop a cruel, mocking, and hedonistic exterior. He was crowned High King of Elfhame through a plot orchestrated by Jude.",
+    "summary": "Cruel, beautiful, and clever, Cardan holds the ultimate power of Elfhame yet detests his own royal duties. Underneath his dramatic arrogance lies a sharp mind and a growing obsession with Jude."
+  },
+  {
+    "id": "madoc",
+    "name": "Madoc",
+    "titles": ["Grand General of Elfhame", "Lord of Hollow Hall"],
+    "age": "Hundreds of years",
+    "species": "Redcap (Faerie)",
+    "residence": "Hollow Hall",
+    "image": "/characters/madoc/madoc.png",
+    "background": "Madoc is Jude's foster father and the former Grand General of the High King's army. He is a bloodthirsty warrior who murdered Jude's mortal parents to reclaim his wife, but raised Jude, Taryn, and Vivienne as his own children.",
+    "summary": "Madoc is a calculating strategist whose nature as a Redcap drives him to seek war and bloodshed. He loves his family but will not hesitate to betray them for power and military glory."
+  },
+  {
+    "id": "taryn",
+    "name": "Taryn Duarte",
+    "titles": ["Lady of Locke's Estate"],
+    "age": "18",
+    "species": "Mortal (Human)",
+    "residence": "Locke's Estate (formerly Hollow Hall)",
+    "image": "/characters/taryn/taryn.png",
+    "background": "Taryn is Jude's twin sister. Unlike Jude, who responds to faerie cruelty with defiance and violence, Taryn chose to survive by conforming, seeking a faerie husband, and learning their court etiquette. She was betrothed to Locke.",
+    "summary": "Taryn is quiet and seemingly submissive, but she holds a quiet ambition of her own. Her desire for safety and status in the faerie world often puts her at odds with her sister."
+  },
+  {
+    "id": "locke",
+    "name": "Locke",
+    "titles": ["Master of Revels", "Lord of Locke's Estate"],
+    "age": "Decades",
+    "species": "Faerie (Gentry)",
+    "residence": "Locke's Estate",
+    "image": "/characters/locke/locke.png",
+    "background": "Locke is a charismatic nobleman who loves drama, manipulation, and chaos. He was a close companion to Cardan and engaged in complex love games with both Jude and Taryn.",
+    "summary": "Locke is a trickster who views emotions as materials for art and stories. He is untrustworthy, fickle, and delights in causing emotional torment and court gossip."
+  },
+  {
+    "id": "roach",
+    "name": "The Roach",
+    "titles": ["Master of Spies", "Leader of the Court of Shadows"],
+    "age": "Decades",
+    "species": "Goblin (Faerie)",
+    "residence": "Court of Shadows Hideouts",
+    "image": "/characters/roach/roach.png",
+    "background": "The Roach is a goblin spy master who runs the Court of Shadows, a secret espionage network that works for Prince Dain. He recruited Jude and trained her in theft and infiltration.",
+    "summary": "Practical, loyal, and highly dangerous, the Roach operates in the underbelly of Elfhame. He possesses a dry humor and value-driven loyalty to his crew."
+  },
+  {
+    "id": "bomb",
+    "name": "The Bomb",
+    "titles": ["Liliver", "Demolitionist of the Court of Shadows"],
+    "age": "Decades",
+    "species": "Sprite (Faerie)",
+    "residence": "Court of Shadows Hideouts",
+    "image": "/characters/bomb/bomb.png",
+    "background": "Liliver, known as The Bomb, is a master of explosives and potions. She is a core member of the Court of Shadows, helping Jude gather intel and escape dangerous traps.",
+    "summary": "Flirtatious and deadly, The Bomb uses her knowledge of faerie materials and chemistry to brew potions and blow up obstacles. She is one of Jude's closest allies."
+  },
+  {
+    "id": "ghost",
+    "name": "The Ghost",
+    "titles": ["Garrett", "Marksman of the Court of Shadows"],
+    "age": "Decades",
+    "species": "Half-Fae",
+    "residence": "Court of Shadows Hideouts",
+    "image": "/characters/ghost/ghost.png",
+    "background": "The Ghost is a half-mortal marksman skilled in stealth and archery. He works for the Court of Shadows and was a close friend to Jude, though he harbored secret allegiances.",
+    "summary": "Silent and unseen, The Ghost is a lethal sniper who can move without making a sound. His mixed blood gives him an affinity for stealth, but also complicates his loyalty."
+  },
+  {
+    "id": "nicassia",
+    "name": "Nicassia",
+    "titles": ["Princess of the Undersea"],
+    "age": "19",
+    "species": "Faerie (Undersea Fae)",
+    "residence": "The Deep Undersea / Palace of Elfhame",
+    "image": "/characters/nicassia/nicassia.png",
+    "background": "Nicassia is the daughter of Queen Orlagh of the Undersea. She is part of Cardan's circle of cruel friends at the High Court, and was once Cardan's lover.",
+    "summary": "Proud, cruel, and vindictive, Nicassia represents the political ambition of the Undersea. She harbors a deep hatred for mortals, especially Jude."
+  },
+  {
+    "id": "oak",
+    "name": "Prince Oak",
+    "titles": ["Crown Prince of Elfhame"],
+    "age": "8",
+    "species": "Faerie (High Fae)",
+    "residence": "Palace of Elfhame (formerly Hollow Hall)",
+    "image": "/characters/oak/oak.png",
+    "background": "Oak is the biological son of Prince Dain and Jude's faerie sister Vivienne. Jude hid his royal heritage to protect him and sent him to be raised in the mortal world until he is ready to claim the throne.",
+    "summary": "Oak is a playful, innocent child who loves his foster sisters. He is the key heir to the throne of Elfhame, and Jude does everything in her power to protect him from court corruption."
+  }
+]

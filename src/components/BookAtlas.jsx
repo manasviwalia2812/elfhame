@@ -14,7 +14,7 @@ export default function BookAtlas({ setGlobalLocation }) {
   // Book flipping animation states
   const [coverTurned, setCoverTurned] = useState(returnFrom ? true : false);
   const [currentPage, setCurrentPage] = useState(
-    returnFrom === 'palace' ? 1 : 0
+    returnFrom === 'palace' ? 1 : (returnFrom === 'gallery' ? 2 : 0)
   );
   
   // Set initial turned state based on routing parameters
@@ -24,6 +24,16 @@ export default function BookAtlas({ setGlobalLocation }) {
       return [
         { turned: true, zIndex: 10 },
         { turned: false, zIndex: 19 },
+        { turned: false, zIndex: 18 },
+        { turned: false, zIndex: 17 },
+        { turned: false, zIndex: 16 },
+        { turned: false, zIndex: 15 },
+      ];
+    } else if (returnFrom === 'gallery') {
+      // Chapter III: Sheets 0 and 1 are turned (left side), others are on the right
+      return [
+        { turned: true, zIndex: 10 },
+        { turned: true, zIndex: 11 },
         { turned: false, zIndex: 18 },
         { turned: false, zIndex: 17 },
         { turned: false, zIndex: 16 },
@@ -236,6 +246,14 @@ export default function BookAtlas({ setGlobalLocation }) {
     }, 1200);
   };
 
+  const navigateToGallery = () => {
+    audioSynth.playMarkerClick();
+    setBookZoomState('zooming-out');
+    setTimeout(() => {
+      navigate('/gallery');
+    }, 1200);
+  };
+
   const isClosed = !coverTurned;
 
   return (
@@ -425,7 +443,14 @@ export default function BookAtlas({ setGlobalLocation }) {
                     <p className="chapter-desc" style={{ fontStyle: 'italic', opacity: 0.7 }}>
                       Details of the mortal wanderers, goblin merchants, and scheming nobility of the High Court.
                     </p>
-                    <p style={styles.comingSoon}>— Chapter Locked —</p>
+                    <button 
+                      className="btn-fantasy glow-gold" 
+                      style={{ marginTop: '15px', fontSize: '0.8rem', width: 'fit-content', alignSelf: 'center' }}
+                      onClick={navigateToGallery}
+                      disabled={isIntroAnimating}
+                    >
+                      🎭 ENTER GALLERY
+                    </button>
                   </div>
                 )}
 
@@ -521,10 +546,17 @@ export default function BookAtlas({ setGlobalLocation }) {
                     <span className="chapter-label">CHAPTER III</span>
                     <h2 className="chapter-headline">THE FOLK</h2>
                     <div className="landing-divider" style={{ margin: '15px auto' }} />
-                    <p className="chapter-summary">
+                    <p className="chapter-summary" style={{ marginBottom: '15px' }}>
                       "Details of the mortal wanderers, goblin merchants, and scheming nobility of the High Court."
                     </p>
-                    <p style={styles.comingSoon}>— Chapter Locked —</p>
+                    <button 
+                      className="btn-fantasy glow-gold" 
+                      style={{ marginTop: '10px' }}
+                      onClick={navigateToGallery}
+                      disabled={isIntroAnimating}
+                    >
+                      🎭 ENTER GALLERY
+                    </button>
                   </div>
                 )}
 

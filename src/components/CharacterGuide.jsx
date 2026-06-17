@@ -63,56 +63,50 @@ const dialogueData = {
 export default function CharacterGuide({ currentLocation, isVisible }) {
   const [dialogue, setDialogue] = useState(dialogueData.landing);
   const [isBlinking, setIsBlinking] = useState(false);
-  
+  const [isCollapsed, setIsCollapsed] = useState(false);   // ← new
   const turbulenceRef = useRef(null);
 
-  // Update dialogue when current location changes
   useEffect(() => {
     const key = currentLocation || 'map';
     if (dialogueData[key]) {
       setDialogue(dialogueData[key]);
-      // Play a soft whisper/chime when Jude speaks
-      if (currentLocation) {
-        audioSynth.playMarkerHover();
-      }
+      if (currentLocation) audioSynth.playMarkerHover();
     }
   }, [currentLocation]);
 
-  // Simulate blinking eyes
   useEffect(() => {
     const blinkInterval = setInterval(() => {
       setIsBlinking(true);
       setTimeout(() => setIsBlinking(false), 150);
     }, 4000 + Math.random() * 3000);
-
     return () => clearInterval(blinkInterval);
   }, []);
 
-  // Animate the SVG turbulence baseFrequency to simulate wind-sway
   useEffect(() => {
     let animationFrameId;
     let time = 0;
-
     const animateWind = () => {
       time += 0.005;
       if (turbulenceRef.current) {
-        // Modulate frequency to make wind gusty
         const xFreq = 0.01 + Math.sin(time) * 0.002;
         const yFreq = 0.03 + Math.cos(time * 0.7) * 0.005;
         turbulenceRef.current.setAttribute('baseFrequency', `${xFreq} ${yFreq}`);
       }
       animationFrameId = requestAnimationFrame(animateWind);
     };
-
     animateWind();
     return () => cancelAnimationFrame(animationFrameId);
   }, []);
 
   if (!isVisible) return null;
 
+  const handlePortraitClick = () => {
+    audioSynth.playMarkerClick();
+    setIsCollapsed(prev => !prev);
+  };
+
   return (
     <div className="character-guide-root">
-      {/* SVG Wind Sway Filter */}
       <svg style={{ position: 'absolute', width: 0, height: 0 }}>
         <filter id="jude-wind-filter">
           <feTurbulence
@@ -132,21 +126,57 @@ export default function CharacterGuide({ currentLocation, isVisible }) {
         </filter>
       </svg>
 
-      {/* Character Illustration with wind sway and breathing */}
+      {/* Portrait — clicking toggles collapse */}
       <div className="jude-wrapper">
-        <div className="jude-image-container">
+        <div
+          className="jude-image-container"
+          onClick={handlePortraitClick}
+          style={{ cursor: 'pointer' }}
+          title={isCollapsed ? 'Open dialogue' : 'Close dialogue'}
+        >
           <img
             src="/characters/jude/judeduarte.jpeg"
             alt="Jude Duarte"
             className="jude-sprite"
           />
-          {/* Glowing faerie particles behind her */}
           <div className="jude-backlight" />
+
+          {/* Collapse/expand hint tab on the right edge of the portrait */}
+          <motion.div
+            className="jude-toggle-tab"
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2 }}
+          >
+            <motion.span
+              animate={{ rotate: isCollapsed ? 0 : 180 }}
+              transition={{ duration: 0.35, ease: 'easeInOut' }}
+              style={{ display: 'inline-block', lineHeight: 1 }}
+            >
+              ›
+            </motion.span>
+          </motion.div>
         </div>
       </div>
 
-      {/* Dialogue Box Overlay */}
-      <div className="dialogue-box gothic-border">
+      {/* Dialogue box — collapses horizontally */}
+      <motion.div
+        className="dialogue-box gothic-border"
+        initial={false}
+        animate={{
+          width: isCollapsed ? 0 : 'auto',
+          opacity: isCollapsed ? 0 : 1,
+          marginLeft: isCollapsed ? 0 : undefined,
+          paddingLeft: isCollapsed ? 0 : undefined,
+          paddingRight: isCollapsed ? 0 : undefined,
+        }}
+        transition={{
+          width:   { duration: 0.4, ease: [0.4, 0, 0.2, 1] },
+          opacity: { duration: 0.25, ease: 'easeInOut' },
+          paddingLeft:  { duration: 0.4 },
+          paddingRight: { duration: 0.4 },
+        }}
+        style={{ overflow: 'hidden', whiteSpace: isCollapsed ? 'nowrap' : 'normal' }}
+      >
         <AnimatePresence mode="wait">
           <motion.div
             key={dialogue.greeting}
@@ -163,7 +193,7 @@ export default function CharacterGuide({ currentLocation, isVisible }) {
             </div>
           </motion.div>
         </AnimatePresence>
-      </div>
+      </motion.div>
 
       <style>{`
         .character-guide-root {
@@ -292,6 +322,25 @@ export default function CharacterGuide({ currentLocation, isVisible }) {
           .dialogue-text {
             font-size: 0.8rem;
           }
+        }
+          .jude-toggle-tab {
+          position: absolute;
+          right: -10px;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 18px;
+          height: 28px;
+          background: rgba(11, 15, 20, 0.85);
+          border: 1px solid var(--gold-dark);
+          border-left: none;
+          border-radius: 0 4px 4px 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 16px;
+          color: var(--gold-primary);
+          cursor: pointer;
+          z-index: 2;
         }
       `}</style>
     </div>

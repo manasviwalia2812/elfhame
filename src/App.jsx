@@ -8,6 +8,7 @@ import MapPage from './components/MapPage';
 import PalacePage from './components/PalacePage';
 import CharacterGuide from './components/CharacterGuide';
 import FairyDust from './components/FairyDust';
+import FolkGallery from './components/FolkGallery';
 import audioSynth from './utils/audio';
 
 export default function App() {
@@ -189,6 +190,11 @@ function AppContent() {
         {/* Book Atlas View */}
         <Route path="/book" element={
           <BookAtlas setGlobalLocation={setGlobalLocation} />
+        } />
+
+        {/* Folk Gallery View */}
+        <Route path="/gallery" element={
+          <FolkGallery setGlobalLocation={setGlobalLocation} />
         } />
 
         {/* 3D Atlas Map View */}
