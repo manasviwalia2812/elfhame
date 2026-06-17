@@ -7,6 +7,8 @@ import BookAtlas from './components/BookAtlas';
 import MapPage from './components/MapPage';
 import PalacePage from './components/PalacePage';
 import UnderseaPage from './components/UnderseaPage';
+import CrownForestPage from './components/CrownForestPage';
+import TowerForgettingPage from './components/TowerForgettingPage';
 import CharacterGuide from './components/CharacterGuide';
 import FairyDust from './components/FairyDust';
 import FolkGallery from './components/FolkGallery';
@@ -71,7 +73,9 @@ function AppContent() {
 
   const isPalace = location.pathname === '/palace';
   const isUndersea = location.pathname === '/undersea';
-  const hideGlobalOverlays = isPalace || isUndersea;
+  const isForest = location.pathname === '/crown_forest';
+  const isTower = location.pathname === '/tower_forgetting';
+  const hideGlobalOverlays = isPalace || isUndersea || isForest || isTower;
 
   return (
     <div className="elfhame-app">
@@ -218,10 +222,20 @@ function AppContent() {
         <Route path="/undersea" element={
           <UnderseaPage setGlobalLocation={setGlobalLocation} />
         } />
+
+        {/* Crown Forest View */}
+        <Route path="/crown_forest" element={
+          <CrownForestPage setGlobalLocation={setGlobalLocation} />
+        } />
+
+        {/* Tower of Forgetting View */}
+        <Route path="/tower_forgetting" element={
+          <TowerForgettingPage setGlobalLocation={setGlobalLocation} />
+        } />
       </Routes>
 
       {/* Global Fairy Dust overlaying the 3D Scenes */}
-      {!isLanding && !welcomeActive && location.pathname !== '/gallery' && location.pathname !== '/palace' && location.pathname !== '/undersea' && <FairyDust />}
+      {!isLanding && !welcomeActive && location.pathname !== '/gallery' && location.pathname !== '/palace' && location.pathname !== '/undersea' && location.pathname !== '/crown_forest' && location.pathname !== '/tower_forgetting' && <FairyDust />}
 
       {/* WELCOME INTRO OVERLAY */}
       <AnimatePresence>

@@ -21,6 +21,10 @@ export default function MapPage({ setGlobalLocation }) {
       navigate('/palace');
     } else if (selectedLoc === 'undersea') {
       navigate('/undersea');
+    } else if (selectedLoc === 'crown_forest') {
+      navigate('/crown_forest');
+    } else if (selectedLoc === 'tower_forgetting') {
+      navigate('/tower_forgetting');
     } else if (selectedLoc) {
       setGameState('zoomed_in');
     }

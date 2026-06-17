@@ -1,6 +1,8 @@
 import typewriterMp3 from './typewriter.mp3';
 import palaceMp3 from './kingdom_dance_tangled.mp3';
 import underseaMp3 from './Danny_Elfman_Moon_Dance.mp3';
+import forestMp3 from './Ramin_Djawadi_Light_of_the_Seven.mp3';
+import towerMp3 from './dark_horror_mystic_ambient.mp3';
 
 class ElfhameSynthesizer {
   constructor() {
@@ -23,6 +25,10 @@ class ElfhameSynthesizer {
     this.palaceGain = null;
     this.underseaAudio = null;
     this.underseaGain = null;
+    this.forestAudio = null;
+    this.forestGain = null;
+    this.towerAudio = null;
+    this.towerGain = null;
   }
 
   init() {
@@ -74,6 +80,10 @@ class ElfhameSynthesizer {
       this.playPalaceMusic();
     } else if (this.currentScene === 'undersea') {
       this.playUnderseaMusic();
+    } else if (this.currentScene === 'crown_forest') {
+      this.playForestMusic();
+    } else if (this.currentScene === 'tower_forgetting') {
+      this.playTowerMusic();
     } else {
       // Fade in Master
       this.droneGain.gain.linearRampToValueAtTime(0.25, this.ctx.currentTime + 3.0);
@@ -103,6 +113,10 @@ class ElfhameSynthesizer {
       this.stopPalaceMusic();
     } else if (this.currentScene === 'undersea') {
       this.stopUnderseaMusic();
+    } else if (this.currentScene === 'crown_forest') {
+      this.stopForestMusic();
+    } else if (this.currentScene === 'tower_forgetting') {
+      this.stopTowerMusic();
     } else {
       // Fade out
       if (this.droneGain) {
@@ -131,6 +145,10 @@ class ElfhameSynthesizer {
       this.stopPalaceMusic();
     } else if (prevScene === 'undersea') {
       this.stopUnderseaMusic();
+    } else if (prevScene === 'crown_forest') {
+      this.stopForestMusic();
+    } else if (prevScene === 'tower_forgetting') {
+      this.stopTowerMusic();
     } else {
       // Fade out ambient drone
       clearInterval(this.harmonyInterval);
@@ -153,6 +171,10 @@ class ElfhameSynthesizer {
       this.playPalaceMusic();
     } else if (sceneName === 'undersea') {
       this.playUnderseaMusic();
+    } else if (sceneName === 'crown_forest') {
+      this.playForestMusic();
+    } else if (sceneName === 'tower_forgetting') {
+      this.playTowerMusic();
     } else {
       // Transition back to default
       if (this.isPlaying) {
@@ -264,6 +286,102 @@ class ElfhameSynthesizer {
       } else {
         this.underseaAudio.pause();
         this.underseaAudio.currentTime = 0;
+      }
+    }
+  }
+
+  playForestMusic() {
+    if (!this.ctx) return;
+    
+    if (!this.forestAudio) {
+      this.forestAudio = new Audio(forestMp3);
+      this.forestAudio.loop = true;
+      
+      try {
+        const source = this.ctx.createMediaElementSource(this.forestAudio);
+        this.forestGain = this.ctx.createGain();
+        this.forestGain.gain.setValueAtTime(0, this.ctx.currentTime);
+        source.connect(this.forestGain);
+        this.forestGain.connect(this.masterGain);
+      } catch (e) {
+        console.error("Forest audio binding error:", e);
+        this.forestAudio.volume = 0.5;
+      }
+    }
+    
+    if (this.isPlaying) {
+      this.forestAudio.currentTime = 0;
+      this.forestAudio.play().catch(e => console.error("Forest audio play error:", e));
+      if (this.forestGain) {
+        this.forestGain.gain.cancelScheduledValues(this.ctx.currentTime);
+        this.forestGain.gain.setValueAtTime(0, this.ctx.currentTime);
+        this.forestGain.gain.linearRampToValueAtTime(0.4, this.ctx.currentTime + 1.5);
+      }
+    }
+  }
+
+  stopForestMusic() {
+    if (this.forestAudio) {
+      if (this.forestGain && this.ctx) {
+        this.forestGain.gain.cancelScheduledValues(this.ctx.currentTime);
+        this.forestGain.gain.linearRampToValueAtTime(0.0, this.ctx.currentTime + 1.0);
+        setTimeout(() => {
+          if (this.currentScene !== 'crown_forest') {
+            this.forestAudio.pause();
+            this.forestAudio.currentTime = 0;
+          }
+        }, 1000);
+      } else {
+        this.forestAudio.pause();
+        this.forestAudio.currentTime = 0;
+      }
+    }
+  }
+
+  playTowerMusic() {
+    if (!this.ctx) return;
+    
+    if (!this.towerAudio) {
+      this.towerAudio = new Audio(towerMp3);
+      this.towerAudio.loop = true;
+      
+      try {
+        const source = this.ctx.createMediaElementSource(this.towerAudio);
+        this.towerGain = this.ctx.createGain();
+        this.towerGain.gain.setValueAtTime(0, this.ctx.currentTime);
+        source.connect(this.towerGain);
+        this.towerGain.connect(this.masterGain);
+      } catch (e) {
+        console.error("Tower audio binding error:", e);
+        this.towerAudio.volume = 0.5;
+      }
+    }
+    
+    if (this.isPlaying) {
+      this.towerAudio.currentTime = 0;
+      this.towerAudio.play().catch(e => console.error("Tower audio play error:", e));
+      if (this.towerGain) {
+        this.towerGain.gain.cancelScheduledValues(this.ctx.currentTime);
+        this.towerGain.gain.setValueAtTime(0, this.ctx.currentTime);
+        this.towerGain.gain.linearRampToValueAtTime(0.4, this.ctx.currentTime + 1.5);
+      }
+    }
+  }
+
+  stopTowerMusic() {
+    if (this.towerAudio) {
+      if (this.towerGain && this.ctx) {
+        this.towerGain.gain.cancelScheduledValues(this.ctx.currentTime);
+        this.towerGain.gain.linearRampToValueAtTime(0.0, this.ctx.currentTime + 1.0);
+        setTimeout(() => {
+          if (this.currentScene !== 'tower_forgetting') {
+            this.towerAudio.pause();
+            this.towerAudio.currentTime = 0;
+          }
+        }, 1000);
+      } else {
+        this.towerAudio.pause();
+        this.towerAudio.currentTime = 0;
       }
     }
   }
