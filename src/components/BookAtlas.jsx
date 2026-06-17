@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import audioSynth from '../utils/audio';
+import QuillWriter from './QuillWriter';
+import goldFeather from '../assets/gold_feather.png';
+import inkPot from '../assets/ink_pot.png';
 
 const NUM_PAGES = 6; // Chapters I to VI
 
@@ -393,15 +396,15 @@ export default function BookAtlas({ setGlobalLocation }) {
                 
                 {/* --- CHAPTER I: THE REALM (RIGHT SPREAD) --- */}
                 {i === 0 && (
-                  <div className="chapter-details-vintage">
+                  <div className="chapter-details-vintage" style={{ position: 'relative', minHeight: 300 }}>
                     <h3>THE LIVING MAP</h3>
                     <div className="sidebar-divider" />
-                    <p style={{ fontSize: '0.85rem', lineHeight: '1.4', opacity: 0.8 }}>
-                      Select any pulsing marker on the right page to inspect realm lore, quotes, and hidden secrets.
-                    </p>
-                    <p style={{ fontSize: '0.85rem', lineHeight: '1.4', opacity: 0.8 }}>
-                      Navigate through Castle Elfhame, Locke's decadent ruins, the dangerous deep of the Undersea, or trade poisons in the Goblin market stalls.
-                    </p>
+                    <QuillWriter
+                      text={`Select any pulsing marker on the right page to inspect realm lore, quotes, and hidden secrets. Navigate through Castle Elfhame, Locke's decadent ruins, the dangerous deep of the Undersea, or trade poisons in the Goblin market stalls.`}
+                      active={currentPage === 0 && !isIntroAnimating && coverTurned}
+                      feathterSrc={goldFeather}
+                      inkpotSrc={inkPot}
+                    />
                     <button 
                       className="btn-fantasy glow-gold" 
                       style={{ marginTop: '15px', fontSize: '0.8rem', width: 'fit-content', alignSelf: 'center' }}
@@ -418,31 +421,31 @@ export default function BookAtlas({ setGlobalLocation }) {
 
                 {/* --- CHAPTER II: THE COURTS (RIGHT SPREAD) --- */}
                 {i === 1 && (
-                  <div className="chapter-details-vintage">
+                  <div className="chapter-details-vintage" style={{ position: 'relative', minHeight: 300 }}>
                     <h3>THE HIGH COURT</h3>
                     <div className="sidebar-divider" />
-                    <p>
-                      "Most of all, I hate him because I think of him, often. It's like a disease."
-                    </p>
-                    <p style={{ fontSize: '0.85rem', lineHeight: '1.3', opacity: 0.8 }}>
-                      The Royal Palace stands as the crowning jewel of Elfhame. Inside, noble families plot for power, trading silver promises and deadly nightshade.
-                    </p>
-                    <p style={{ fontSize: '0.85rem', lineHeight: '1.3', opacity: 0.8 }}>
-                      Beneath the gilded columns, Cardan Duarte sits on the throne of thorns, mocking the mortals who dare tread his halls.
-                    </p>
+                    <QuillWriter
+                      text={`"Most of all, I hate him because I think of him, often. It's like a disease." The Royal Palace stands as the crowning jewel of Elfhame. Inside, noble families plot for power, trading silver promises and deadly nightshade. Beneath the gilded columns, Cardan Duarte sits on the throne of thorns, mocking the mortals who dare tread his halls.`}
+                      active={ps.turned === false && currentPage === i} // trigger when this page becomes visible
+                      feathterSrc={goldFeather}
+                      inkpotSrc={inkPot}
+                    />
                   </div>
                 )}
 
                 {/* --- CHAPTER III: THE FOLK (RIGHT SPREAD) --- */}
                 {i === 2 && (
-                  <div className="chapter-cover-vintage">
+                  <div className="chapter-cover-vintage" style={{ position: 'relative', minHeight: 300 }}>
                     <span className="chapter-label">CHAPTER III</span>
                     <h2 className="chapter-headline">THE FOLK</h2>
                     <div className="landing-divider" style={{ margin: '15px auto' }} />
                     <h4 style={{ color: 'var(--gold-dark)', margin: '10px 0' }}>Characters & Cards</h4>
-                    <p className="chapter-desc" style={{ fontStyle: 'italic', opacity: 0.7 }}>
-                      Details of the mortal wanderers, goblin merchants, and scheming nobility of the High Court.
-                    </p>
+                    <QuillWriter
+                      text={`Details of the mortal wanderers, goblin merchants, and scheming nobility of the High Court.`}
+                      active={ps.turned === false && currentPage === i}
+                      feathterSrc={goldFeather}
+                      inkpotSrc={inkPot}
+                    />
                     <button 
                       className="btn-fantasy glow-gold" 
                       style={{ marginTop: '15px', fontSize: '0.8rem', width: 'fit-content', alignSelf: 'center' }}
@@ -456,42 +459,51 @@ export default function BookAtlas({ setGlobalLocation }) {
 
                 {/* --- CHAPTER IV: THE MAGIC (RIGHT SPREAD) --- */}
                 {i === 3 && (
-                  <div className="chapter-cover-vintage">
+                  <div className="chapter-cover-vintage" style={{ position: 'relative', minHeight: 300 }}>
                     <span className="chapter-label">CHAPTER IV</span>
                     <h2 className="chapter-headline">THE MAGIC</h2>
                     <div className="landing-divider" style={{ margin: '15px auto' }} />
                     <h4 style={{ color: 'var(--gold-dark)', margin: '10px 0' }}>Creatures, Relics, Traditions</h4>
-                    <p className="chapter-desc" style={{ fontStyle: 'italic', opacity: 0.7 }}>
-                      An index of ancient artifacts, cursed rowan wood berries, ragwort horses, and standard faerie glamour.
-                    </p>
+                    <QuillWriter
+                      text={`An index of ancient artifacts, cursed rowan wood berries, ragwort horses, and standard faerie glamour.`}
+                      active={ps.turned === false && currentPage === i}
+                      feathterSrc={goldFeather}
+                      inkpotSrc={inkPot}
+                    />
                     <p style={styles.comingSoon}>— Chapter Locked —</p>
                   </div>
                 )}
 
                 {/* --- CHAPTER V: THE STORY (RIGHT SPREAD) --- */}
                 {i === 4 && (
-                  <div className="chapter-cover-vintage">
+                  <div className="chapter-cover-vintage" style={{ position: 'relative', minHeight: 300 }}>
                     <span className="chapter-label">CHAPTER V</span>
                     <h2 className="chapter-headline">THE STORY</h2>
                     <div className="landing-divider" style={{ margin: '15px auto' }} />
                     <h4 style={{ color: 'var(--gold-dark)', margin: '10px 0' }}>Timeline of Events</h4>
-                    <p className="chapter-desc" style={{ fontStyle: 'italic', opacity: 0.7 }}>
-                      A compilation of major historical moments, royal coronations, and plots.
-                    </p>
+                    <QuillWriter
+                      text={`A compilation of major historical moments, royal coronations, and plots.`}
+                      active={ps.turned === false && currentPage === i}
+                      feathterSrc={goldFeather}
+                      inkpotSrc={inkPot}
+                    />
                     <p style={styles.comingSoon}>— Chapter Locked —</p>
                   </div>
                 )}
 
                 {/* --- CHAPTER VI: THE HEART (RIGHT SPREAD) --- */}
                 {i === 5 && (
-                  <div className="chapter-cover-vintage">
+                  <div className="chapter-cover-vintage" style={{ position: 'relative', minHeight: 300 }}>
                     <span className="chapter-label">CHAPTER VI</span>
                     <h2 className="chapter-headline">THE HEART</h2>
                     <div className="landing-divider" style={{ margin: '15px auto' }} />
                     <h4 style={{ color: 'var(--gold-dark)', margin: '10px 0' }}>Quotes & Relationships</h4>
-                    <p className="chapter-desc" style={{ fontStyle: 'italic', opacity: 0.7 }}>
-                      A spiderweb of love, hate, and alliances binding Jude Duarte and High King Cardan.
-                    </p>
+                    <QuillWriter
+                      text={`A spiderweb of love, hate, and alliances binding Jude Duarte and High King Cardan.`}
+                      active={ps.turned === false && currentPage === i}
+                      feathterSrc={goldFeather}
+                      inkpotSrc={inkPot}
+                    />
                     <p style={styles.comingSoon}>— Chapter Locked —</p>
                   </div>
                 )}
