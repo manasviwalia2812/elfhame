@@ -207,7 +207,9 @@ export default function BookAtlas({ setGlobalLocation }) {
   // Close the book cover and reset to front page from the end of the book
   const handleReturnToFront = () => {
     console.log("RETURN TO FRONT CLICKED");
-    audioSynth.playPageShuffle();
+    setTimeout(() => {
+      audioSynth.playPageShuffle();
+    }, 500); // 3.2s delay to match page shuffling speed
 
     setIsIntroAnimating(true);
 
@@ -278,39 +280,68 @@ export default function BookAtlas({ setGlobalLocation }) {
           transition: "opacity 0.6s ease-in-out",
         }} />
         
+        {/* Static right side cover (inside parchment / outside backcover) */}
         <div style={{
           ...styles.coverRightUnder,
-          backgroundImage: (currentPage === NUM_PAGES) ? `url(${backCover})` : `url(${frontCover})`,
-          backgroundSize: "cover",
           opacity: isClosed ? 0 : 1,
-          transition: "backgroundImage 0.6s ease-in-out, opacity 0.6s ease-in-out",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "2.5rem",
-          color: "#2c2419",
-          textAlign: "center",
+          transition: "opacity 0.6s ease-in-out",
         }}>
-          {currentPage === NUM_PAGES && !isClosed && (
-            <>
-              <div className="vintage-page-border">
-                <div className="vintage-corner top-left"></div>
-                <div className="vintage-corner top-right"></div>
-                <div className="vintage-corner bottom-left"></div>
-                <div className="vintage-corner bottom-right"></div>
-              </div>
-              
-              <div className="chapter-cover-vintage" style={{ zIndex: 11, padding: '1rem', width: '100%' }}>
-                <span className="chapter-label" style={{ color: '#8a6f27' }}>THE END OF THE JOURNEY</span>
-                <div className="landing-divider" style={{ margin: '10px auto' }} />
-                <p className="chapter-desc" style={{ fontSize: '0.85rem', color: '#3d2f1f', fontStyle: 'italic', marginBottom: '20px' }}>
-                  "If you hurt me, I will find a way to hurt you back. Twice as hard."
-                </p>
+          {/* Inside Face (parchment) */}
+          <div style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundImage: "url('/environment/vintage_parchment_page.png')",
+            backgroundColor: "#fff2df",
+            backgroundSize: "cover",
+            borderTopRightRadius: "0.6rem",
+            borderBottomRightRadius: "0.6rem",
+            backfaceVisibility: "hidden",
+            transform: "rotateY(0deg)",
+            boxShadow: "inset 0 0 50px rgba(0,0,0,0.15)",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "2.5rem",
+            color: "#2c2419",
+            textAlign: "center",
+          }}>
+            {currentPage === NUM_PAGES && !isClosed && (
+              <>
+                <div className="vintage-page-border">
+                  <div className="vintage-corner top-left"></div>
+                  <div className="vintage-corner top-right"></div>
+                  <div className="vintage-corner bottom-left"></div>
+                  <div className="vintage-corner bottom-right"></div>
+                </div>
                 
-              </div>
-            </>
-          )}
+                <div className="chapter-cover-vintage" style={{ zIndex: 11, padding: '1rem', width: '100%' }}>
+                  <span className="chapter-label" style={{ color: '#8a6f27' }}>THE END OF THE JOURNEY</span>
+                  <div className="landing-divider" style={{ margin: '10px auto' }} />
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Outside Face (back cover image) */}
+          <div style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundImage: `url(${backCover})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            borderTopLeftRadius: "0.6rem",
+            borderBottomLeftRadius: "0.6rem",
+            backfaceVisibility: "hidden",
+            transform: "rotateY(180deg)",
+            boxShadow: "inset 0 0 100px rgba(0,0,0,0.5)",
+          }} />
         </div>
 
         {/* Dynamic cover (rotates open or closed) */}
@@ -321,11 +352,15 @@ export default function BookAtlas({ setGlobalLocation }) {
             transformOrigin: isClosed ? 'right' : 'left',
             left: isClosed ? 0 : "50%",
             width: isClosed ? "100%" : "50%",
-            transform: coverTurned ? "rotateY(-180deg)" : "rotateY(0deg)",
+            transform: coverTurned ? "rotateY(-180deg) translateZ(12px)" : "rotateY(0deg) translateZ(0px)",
             transition: "left 1.2s cubic-bezier(.645,.045,.355,1), width 1.2s cubic-bezier(.645,.045,.355,1), transform 1.8s cubic-bezier(.645,.045,.355,1)",
           }}
         >
-          <div style={styles.coverRightFront} />
+          <div style={{
+            ...styles.coverRightFront,
+            transform: `rotateY(0deg) translateZ(${coverTurned ? '0px' : '12px'})`,
+            transition: "transform 1.8s cubic-bezier(.645,.045,.355,1)",
+          }} />
           
           {/* Inside Cover: rendered as a gorgeous parchment page when open */}
           <div style={{
@@ -334,6 +369,12 @@ export default function BookAtlas({ setGlobalLocation }) {
             backgroundColor: isClosed ? "transparent" : "#fff2df",
             backgroundSize: "cover",
             backgroundPosition: "center",
+            transform: `rotateY(180deg) translateZ(${coverTurned ? '0.1px' : '12px'})`,
+            transition: "transform 1.8s cubic-bezier(.645,.045,.355,1)",
+            borderTopLeftRadius: coverTurned ? "0.6rem" : "0px",
+            borderBottomLeftRadius: coverTurned ? "0.6rem" : "0px",
+            borderTopRightRadius: coverTurned ? "0px" : "0.6rem",
+            borderBottomRightRadius: coverTurned ? "0px" : "0.6rem",
           }}>
             {!isClosed && (
               <>
@@ -358,12 +399,26 @@ export default function BookAtlas({ setGlobalLocation }) {
                     <li>Chapter V — The Story</li>
                     <li>Chapter VI — The Heart</li>
                   </ul>
-
                 </div>
               </>
             )}
           </div>
         </div>
+
+        {/* 3D Box Sides when closed */}
+        {isClosed && (
+          <>
+            <div style={styles.spine} />
+            <div style={styles.pageEdgeRight} />
+            <div style={styles.pageEdgeTop} />
+            <div style={styles.pageEdgeBottom} />
+          </>
+        )}
+
+        {/* 3D Spine Crease when open */}
+        {!isClosed && (
+          <div style={styles.openSpine} />
+        )}
 
         {/* Book pages (sheets container) */}
         <div style={{ 
@@ -379,7 +434,9 @@ export default function BookAtlas({ setGlobalLocation }) {
               style={{
                 ...styles.pageRight,
                 zIndex: ps.zIndex,
-                transform: ps.turned ? "rotateY(-180deg)" : "rotateY(0deg)",
+                transform: ps.turned
+                  ? `rotateY(-180deg) translateZ(${10 - i * 1.5}px)`
+                  : `rotateY(0deg) translateZ(${-10 + (NUM_PAGES - i - 1) * 1.5}px)`,
                 boxShadow:
                   ps.turned
                     ? "-20px 0 40px rgba(0,0,0,0.25)"
@@ -419,9 +476,11 @@ export default function BookAtlas({ setGlobalLocation }) {
 
                 {/* --- CHAPTER II: THE COURTS (RIGHT SPREAD) --- */}
                 {i === 1 && (
-                  <div className="chapter-details-vintage" style={{ position: 'relative', minHeight: 300 }}>
-                    <h3>THE HIGH COURT</h3>
-                    <div className="sidebar-divider" />
+                  <div className="chapter-cover-vintage" style={{ position: 'relative', minHeight: 300 }}>
+                    <span className="chapter-label">CHAPTER II</span>
+                    <h2 className="chapter-headline">THE COURTS</h2>
+                    <div className="landing-divider" style={{ margin: '15px auto' }} />
+                    <h4 style={{ color: 'var(--gold-dark)', margin: '10px 0' }}>Families and Heirarchy</h4>
                     <QuillWriter
                       text={`"Most of all, I hate him because I think of him, often. It's like a disease." The Royal Palace stands as the crowning jewel of Elfhame. Inside, noble families plot for power, trading silver promises and deadly nightshade. Beneath the gilded columns, Cardan Duarte sits on the throne of thorns, mocking the mortals who dare tread his halls.`}
                       active={ps.turned === false && currentPage === i} // trigger when this page becomes visible
@@ -444,14 +503,14 @@ export default function BookAtlas({ setGlobalLocation }) {
                       feathterSrc={goldFeather}
                       inkpotSrc={inkPot}
                     />
-                    <button 
+                    {/* <button 
                       className="btn-fantasy glow-gold" 
                       style={{ marginTop: '100px', marginRight: '200px', fontSize: '0.8rem', width: 'fit-content', alignSelf: 'center' }}
                       onClick={navigateToGallery}
                       disabled={isIntroAnimating}
                     >
                       🎭 ENTER GALLERY
-                    </button>
+                    </button> */}
                   </div>
                 )}
 
@@ -613,12 +672,19 @@ export default function BookAtlas({ setGlobalLocation }) {
                 {/* --- END OF BOOK / RETURN TO FRONT COVER (LEFT SPREAD) --- */}
                 {i === 5 && (
                   <div className="chapter-cover-vintage">
-                    <span className="chapter-label">PROLOGUE & EPILOGUE</span>
-                    <h2 className="chapter-headline" style={{ fontSize: '1.35rem' }}>THE END OF THE ATLAS</h2>
+                    <span className="chapter-label">THE END OF THE ATLAS</span>
+                    <h2 className="chapter-headline" style={{ fontSize: '1.35rem' }}>FOLD THE LAST CHAPTER</h2>
                     <div className="landing-divider" style={{ margin: '15px auto' }} />
                     <p className="chapter-desc" style={{ fontSize: '0.82rem', opacity: 0.8, fontStyle: 'italic' }}>
                       "We have spoken of the dead. Now let us speak of the living."
                     </p>
+                    <button
+                      className="btn-fantasy glow-gold" 
+                      style={{ marginTop: '10px' }}
+                      onClick={handleReturnToFront}                      
+                    >
+                      📖 RETURN TO FRONT PAGE
+                    </button>
                   </div>
                 )}
 
@@ -657,7 +723,7 @@ export default function BookAtlas({ setGlobalLocation }) {
           coverTurned
         }
       )} */}
-      {currentPage === NUM_PAGES &&
+      {/* {currentPage === NUM_PAGES &&
         !isClosed &&
         !isIntroAnimating && (
           <button
@@ -673,7 +739,7 @@ export default function BookAtlas({ setGlobalLocation }) {
           >
             📖 RETURN TO FRONT PAGE
           </button>
-        )}
+        )} */}
       {isClosed && !isIntroAnimating && (
         <button className="btn-fantasy btn-open-atlas glow-gold" onClick={handleOpenBook}>
           📖 OPEN ENCHANTED ATLAS
@@ -690,13 +756,15 @@ const styles = {
     left: 0,
     width: "50%",
     height: "100%",
-    backgroundImage: `url(${backCover})`,
+    backgroundImage: `url(${frontCover})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
     borderTopLeftRadius: "0.6rem",
     borderBottomLeftRadius: "0.6rem",
     zIndex: -1,
     boxShadow: "inset 0 0 100px rgba(0,0,0,0.5)",
+    transform: "rotateY(180deg) translateZ(12.5px)",
+    backfaceVisibility: "hidden",
   },
   coverRightUnder: {
     position: "absolute",
@@ -704,14 +772,10 @@ const styles = {
     left: "50%",
     width: "50%",
     height: "100%",
-    backgroundImage: `url(${frontCover})`,
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    borderTopRightRadius: "0.6rem",
-    borderBottomRightRadius: "0.6rem",
     zIndex: -2,
-    PointerEvents: "none",
-    boxShadow: "inset 0 0 100px rgba(0,0,0,0.5)",
+    pointerEvents: "none",
+    transformStyle: "preserve-3d",
+    transform: "translateZ(-12px)",
   },
   coverRight: {
     position: "absolute",
@@ -901,5 +965,71 @@ const styles = {
     lineHeight: 1,
     zIndex: 100,
     transition: "color 0.3s ease, transform 0.3s ease",
+  },
+  spine: {
+    position: "absolute",
+    top: 0,
+    left: "-12px",
+    width: "36px",
+    height: "100%",
+    backgroundColor: "#1c140d",
+    backgroundImage: "linear-gradient(to right, rgba(0,0,0,0.5), rgba(255,255,255,0.1) 40%, rgba(0,0,0,0.6))",
+    borderLeft: "1px solid rgba(138, 111, 39, 0.4)",
+    borderRight: "1px solid rgba(138, 111, 39, 0.4)",
+    transform: "rotateY(-90deg)",
+    transformOrigin: "center",
+  },
+  pageEdgeRight: {
+    position: "absolute",
+    top: "3px",
+    bottom: "3px",
+    right: "-10px",
+    width: "20px",
+    backgroundColor: "#f2e4d0",
+    backgroundImage: "linear-gradient(to right, rgba(0,0,0,0.15) 1px, transparent 1px)",
+    backgroundSize: "3px 100%",
+    transform: "rotateY(90deg)",
+    transformOrigin: "center",
+    boxShadow: "inset 0 0 8px rgba(0,0,0,0.3)",
+  },
+  pageEdgeTop: {
+    position: "absolute",
+    top: "-10px",
+    left: "3px",
+    right: "3px",
+    height: "20px",
+    backgroundColor: "#f2e4d0",
+    backgroundImage: "linear-gradient(to bottom, rgba(0,0,0,0.15) 1px, transparent 1px)",
+    backgroundSize: "100% 3px",
+    transform: "rotateX(90deg)",
+    transformOrigin: "center",
+    boxShadow: "inset 0 0 8px rgba(0,0,0,0.3)",
+  },
+  pageEdgeBottom: {
+    position: "absolute",
+    bottom: "-10px",
+    left: "3px",
+    right: "3px",
+    height: "20px",
+    backgroundColor: "#f2e4d0",
+    backgroundImage: "linear-gradient(to bottom, rgba(0,0,0,0.15) 1px, transparent 1px)",
+    backgroundSize: "100% 3px",
+    transform: "rotateX(-90deg)",
+    transformOrigin: "center",
+    boxShadow: "inset 0 0 8px rgba(0,0,0,0.3)",
+  },
+  openSpine: {
+    position: "absolute",
+    top: 0,
+    left: "calc(50% - 12px)",
+    width: "36px",
+    height: "100%",
+    backgroundColor: "#1a120b",
+    backgroundImage: "linear-gradient(to right, rgba(0,0,0,0.6), rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.6))",
+    borderLeft: "1px solid rgba(255,255,255,0.05)",
+    borderRight: "1px solid rgba(255,255,255,0.05)",
+    boxShadow: "0 0 10px rgba(0,0,0,0.8)",
+    transform: "translateZ(-13px)",
+    zIndex: -3,
   },
 };
