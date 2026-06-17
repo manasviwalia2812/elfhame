@@ -549,7 +549,7 @@ h1, h2, h3, h4, h5, h6 {
   position: absolute;
   bottom: 24px;
   right: 24px;
-  z-index: 10;
+  z-index: 15;
   text-align: right;
 }
 
@@ -700,7 +700,7 @@ h1, h2, h3, h4, h5, h6 {
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 3;
+  z-index: auto;
   background: #050709;
 }
 
@@ -1095,7 +1095,10 @@ h1, h2, h3, h4, h5, h6 {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.85);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url('/environment/bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1275,5 +1278,23 @@ h1, h2, h3, h4, h5, h6 {
     width: 180px;
     height: 240px;
   }
+}
+
+/* Enlarge book navigation buttons & custom cursor on hover/active */
+.book-nav-btn {
+  font-size: 5.5rem !important;
+  font-weight: 300 !important;
+  color: var(--gold-primary) !important;
+  cursor: url('./assets/cursor.png'), auto !important;
+  transition: color 0.3s ease, transform 0.3s ease, opacity 0.3s ease !important;
+}
+
+.book-nav-btn:hover {
+  color: var(--gold-light) !important;
+  transform: scale(1.15) !important;
+}
+
+.book-nav-btn:active {
+  cursor: url('./assets/cursor.png'), auto !important;
 }
 

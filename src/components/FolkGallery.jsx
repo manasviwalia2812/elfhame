@@ -114,17 +114,18 @@ export default function FolkGallery({ setGlobalLocation }) {
       {/* Fairy Dust behind the carousel wrapper */}
       <FairyDust />
 
-      {/* Return to Map/Book button */}
-      <div style={{ position: 'absolute', top: '24px', left: '24px', zIndex: 10 }}>
+      {/* Return to Map/Book buttons */}
+      <div style={{ position: 'absolute', top: '24px', left: '24px', zIndex: 30, display: 'flex', gap: '12px' }}>
         <button 
-          className="btn-back" 
+          className="btn-fantasy glow-gold" 
           onClick={() => {
             audioSynth.playMarkerClick();
             navigate('/book', { state: { returnFrom: 'gallery' } });
           }}
           onMouseEnter={() => audioSynth.playMarkerHover()}
+          style={{ fontSize: '0.8rem', padding: '8px 16px' }}
         >
-          <ArrowLeft size={16} /> RETURN TO ATLAS
+          📖 RETURN TO BOOK
         </button>
       </div>
 

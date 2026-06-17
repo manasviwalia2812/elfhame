@@ -401,14 +401,14 @@ export default function BookAtlas({ setGlobalLocation }) {
                     <h3>THE LIVING MAP</h3>
                     <div className="sidebar-divider" />
                     <QuillWriter
-                      text={`Select any pulsing marker on the right page to inspect realm lore, quotes, and hidden secrets. Navigate through Castle Elfhame, Locke's decadent ruins, the dangerous deep of the Undersea, or trade poisons in the Goblin market stalls.`}
+                      text={`Select the button below to inspect realm lore, quotes, and hidden secrets. Navigate through Castle Elfhame, Locke's decadent ruins, the dangerous deep of the Undersea, or trade poisons in the Goblin market stalls.`}
                       active={currentPage === 0 && !isIntroAnimating && coverTurned}
                       feathterSrc={goldFeather}
                       inkpotSrc={inkPot}
                     />
                     <button 
                       className="btn-fantasy glow-gold" 
-                      style={{ marginTop: '15px', fontSize: '0.8rem', width: 'fit-content', alignSelf: 'center' }}
+                      style={{ marginTop: '100px', marginRight: '200px', fontSize: '0.8rem', width: 'fit-content', alignSelf: 'center' }}
                       onClick={navigateToMap}
                       disabled={isIntroAnimating}
                     >
@@ -446,7 +446,7 @@ export default function BookAtlas({ setGlobalLocation }) {
                     />
                     <button 
                       className="btn-fantasy glow-gold" 
-                      style={{ marginTop: '15px', fontSize: '0.8rem', width: 'fit-content', alignSelf: 'center' }}
+                      style={{ marginTop: '100px', marginRight: '200px', fontSize: '0.8rem', width: 'fit-content', alignSelf: 'center' }}
                       onClick={navigateToGallery}
                       disabled={isIntroAnimating}
                     >
@@ -511,6 +511,7 @@ export default function BookAtlas({ setGlobalLocation }) {
                   <button
                     onClick={() => handlePageTurn(i, 'next')}
                     style={styles.navBtn}
+                    className="book-nav-btn"
                     aria-label="next page"
                   >
                     ›
@@ -626,6 +627,7 @@ export default function BookAtlas({ setGlobalLocation }) {
                   <button
                     onClick={() => handlePageTurn(i, 'prev')}
                     style={{ ...styles.navBtn, left: 16, right: "auto" }}
+                    className="book-nav-btn"
                     aria-label="previous page"
                   >
                     ‹
