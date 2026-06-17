@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { Volume2, VolumeX, HelpCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Analytics } from "@vercel/analytics/react"
 
 import BookAtlas from './components/BookAtlas';
 import MapPage from './components/MapPage';
@@ -21,8 +22,10 @@ export default function App() {
     <AssetLoader manifest={ASSET_MANIFEST}>
       <Router>
         <AppContent />
+        <Analytics />
       </Router>
     </AssetLoader>
+    
   );
 }
 
