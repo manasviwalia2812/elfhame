@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, MapPin } from 'lucide-react';
-import MapScene, { locations } from './MapScene';
+import MapScene from './MapScene';
+import { placesData } from '../data/places';
 import audioSynth from '../utils/audio';
 
 export default function MapPage({ setGlobalLocation }) {
@@ -18,6 +19,8 @@ export default function MapPage({ setGlobalLocation }) {
   const handleTransitionComplete = () => {
     if (selectedLoc === 'palace') {
       navigate('/palace');
+    } else if (selectedLoc === 'undersea') {
+      navigate('/undersea');
     } else if (selectedLoc) {
       setGameState('zoomed_in');
     }
@@ -29,7 +32,7 @@ export default function MapPage({ setGlobalLocation }) {
     setSelectedLoc(null);
   };
 
-  const activeLocData = locations.find(l => l.id === selectedLoc);
+  const activeLocData = placesData.find(l => l.id === selectedLoc);
 
   return (
     <div className="full-screen-scene">
@@ -87,48 +90,9 @@ export default function MapPage({ setGlobalLocation }) {
             <div className="location-secrets gothic-border">
               <h4>COURT SECRETS</h4>
               <ul>
-                {selectedLoc === 'hollow_hall' && (
-                  <>
-                    <li>Madoc keeps a vial of poisonous Blisterlamp sap in his desk.</li>
-                    <li>Taryn has secretly met with Locke in the east pavilion.</li>
-                  </>
-                )}
-                {selectedLoc === 'tower_forgetting' && (
-                  <>
-                    <li>A secret key is hidden under the loose slate of the third pier.</li>
-                    <li>Glamour rings are used to keep guards awake.</li>
-                  </>
-                )}
-                {selectedLoc === 'locke_estate' && (
-                  <>
-                    <li>Locke's mother left a magical lute that charms listeners.</li>
-                    <li>The wine served in the garden ruins is spiced with faerie fruit.</li>
-                  </>
-                )}
-                {selectedLoc === 'lake_masks' && (
-                  <>
-                    <li>The lake water is fed by a spring that drains memories.</li>
-                    <li>The reflection of Jude Duarte shows her holding the High King's crown.</li>
-                  </>
-                )}
-                {selectedLoc === 'crown_forest' && (
-                  <>
-                    <li>The Roach keeps a hideout in the hollow of the Ironwood tree.</li>
-                    <li>Ragwort horses roam the glade at midnight.</li>
-                  </>
-                )}
-                {selectedLoc === 'undersea' && (
-                  <>
-                    <li>Queen Orlagh is vulnerable to cold-iron spears.</li>
-                    <li>Nicasia's sapphire necklace contains captured sea storm wind.</li>
-                  </>
-                )}
-                {selectedLoc === 'market' && (
-                  <>
-                    <li>The goblin merchant trades rowan wood berries for mortal teeth.</li>
-                    <li>The Roach's scouts purchase nightshade concentrate here.</li>
-                  </>
-                )}
+                {activeLocData.secrets && activeLocData.secrets.map((secret, idx) => (
+                  <li key={idx}>{secret}</li>
+                ))}
               </ul>
             </div>
           </motion.div>
@@ -140,7 +104,7 @@ export default function MapPage({ setGlobalLocation }) {
         <div className="quick-nav-bar">
           <span className="quick-nav-title">REALMS OF ELFHAME</span>
           <div className="quick-nav-links">
-            {locations.map(loc => (
+            {placesData.map(loc => (
               <button 
                 key={loc.id} 
                 className="btn-quick-nav glow-gold"

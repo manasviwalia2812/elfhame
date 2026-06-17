@@ -1,0 +1,19 @@
+{
+  "id": "undersea",
+  "name": "Undersea Kingdom",
+  "color": "#1d8585",
+  "x": 2.6,
+  "y": -2.0,
+  "z": 0.0,
+  "quote": "\"In faerie, you can die of a transition.\"",
+  "description": "The cold, vast aquatic domain ruled by Queen Orlagh. Cruel, deep, and constantly plotting to pull the land under.",
+  "history": "The vast ocean kingdom surrounding the islands of Elfhame, ruled by Queen Orlagh. Its deep trenches hold ancient sea monsters, shimmering kelp forests, and coral palaces, locked in a tense political standoff with the land court.",
+  "events": [
+    "The treaty negotiations where Princess Nicasia was offered in marriage.",
+    "The kidnapping of High King Cardan to the Undersea by sea raiders."
+  ],
+  "secrets": [
+    "Queen Orlagh is vulnerable to cold-iron spears.",
+    "Nicasia's sapphire necklace contains captured sea storm wind."
+  ]
+}

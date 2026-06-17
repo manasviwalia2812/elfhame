@@ -1,0 +1,19 @@
+{
+  "id": "locke_estate",
+  "name": "Locke's Estate",
+  "color": "#a82c2c",
+  "x": 1.6,
+  "y": -0.6,
+  "z": 0.0,
+  "quote": "\"If you hurt me, I will find a way to hurt you back. Twice as hard.\"",
+  "description": "A place of sensory indulgence, wild feasts, and devious trickery. Where Locke hosts his decadent, chaotic gatherings.",
+  "history": "A sprawling, overgrown manor surrounded by wildflower gardens and crumbling ruins. Known for hosting the most chaotic and decadent revels of the High Court, it reflects Locke's philosophy of treating emotions and lives as a grand play.",
+  "events": [
+    "Locke's infamous dramatic revels, where nobles compete for favor through gossip.",
+    "Taryn Duarte's residency and marriage to Locke."
+  ],
+  "secrets": [
+    "Locke's mother left a magical lute that charms listeners.",
+    "The wine served in the garden ruins is spiced with faerie fruit."
+  ]
+}

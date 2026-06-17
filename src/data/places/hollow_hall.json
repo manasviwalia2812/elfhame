@@ -1,0 +1,19 @@
+{
+  "id": "hollow_hall",
+  "name": "Hollow Hall",
+  "color": "#0f8558",
+  "x": -2.2,
+  "y": 1.4,
+  "z": 0.0,
+  "quote": "\"If I cannot be better than them, I will become so much worse.\"",
+  "description": "The estate of General Madoc, Jude's foster father. A fortress of weapons, war planning, and ancient faerie military power.",
+  "history": "Hollow Hall is the ancestral fortress of General Madoc. Nestled deep within the ancient woodlands, its walls are built of dark mossy stone and reinforced with ironwood. Inside, the halls are lined with trophies of war, ancient swords, and shields of fallen fae lords.",
+  "events": [
+    "Jude and Taryn were brought here as children after Madoc killed their mortal parents.",
+    "The planning of the military coup to overthrow King Eldred was held in the war chamber."
+  ],
+  "secrets": [
+    "Madoc keeps a vial of poisonous Blisterlamp sap in his desk.",
+    "Taryn has secretly met with Locke in the east pavilion."
+  ]
+}

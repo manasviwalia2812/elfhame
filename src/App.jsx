@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import BookAtlas from './components/BookAtlas';
 import MapPage from './components/MapPage';
 import PalacePage from './components/PalacePage';
+import UnderseaPage from './components/UnderseaPage';
 import CharacterGuide from './components/CharacterGuide';
 import FairyDust from './components/FairyDust';
 import FolkGallery from './components/FolkGallery';
@@ -68,12 +69,16 @@ function AppContent() {
     navigate('/book');
   };
 
+  const isPalace = location.pathname === '/palace';
+  const isUndersea = location.pathname === '/undersea';
+  const hideGlobalOverlays = isPalace || isUndersea;
+
   return (
     <div className="elfhame-app">
       {/* Mystical Background Mist */}
-      <div className="mist-layer" />
-      <div className="vignette" />
-      <div className="overlay-particles" />
+      {!hideGlobalOverlays && <div className="mist-layer" />}
+      {!hideGlobalOverlays && <div className="vignette" />}
+      {!hideGlobalOverlays && <div className="overlay-particles" />}
 
       {/* AUDIO CONTROL BAR (Top Right) */}
       {!isLanding && (
@@ -208,10 +213,15 @@ function AppContent() {
         <Route path="/palace" element={
           <PalacePage setGlobalLocation={setGlobalLocation} />
         } />
+
+        {/* Undersea Kingdom View */}
+        <Route path="/undersea" element={
+          <UnderseaPage setGlobalLocation={setGlobalLocation} />
+        } />
       </Routes>
 
       {/* Global Fairy Dust overlaying the 3D Scenes */}
-      {!isLanding && !welcomeActive && location.pathname !== '/gallery' && <FairyDust />}
+      {!isLanding && !welcomeActive && location.pathname !== '/gallery' && location.pathname !== '/palace' && location.pathname !== '/undersea' && <FairyDust />}
 
       {/* WELCOME INTRO OVERLAY */}
       <AnimatePresence>

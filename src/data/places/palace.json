@@ -1,0 +1,21 @@
+{
+  "id": "palace",
+  "name": "Palace of Elfhame",
+  "color": "#d4af37",
+  "x": 0.1,
+  "y": 0.6,
+  "z": 0.0,
+  "quote": "\"Most of all, I hate him because I think of him, often. It's like a disease.\"",
+  "description": "The royal seat of the High King, balancing on trees and stone columns above the sea. Beautiful, intimidating, and filled with dark court intrigue.",
+  "history": "Built upon massive, ancient ironwood trees and stone columns rising directly from the sea, the Palace of Elfhame has stood for centuries as the heart of faerie power. It represents both the beauty and the lethal dangers of the High Court, where mortal lives are traded for amusement and royal lineages are forged in blood.",
+  "events": [
+    "Coronation of High King Cardan Greenbriar by the mortal Jude Duarte.",
+    "The bloodbath of the coronation feast where Prince Dain was murdered.",
+    "The treaty signing between the High Court of Elfhame and Queen Orlagh of the Undersea."
+  ],
+  "secrets": [
+    "Cardan's crown is made of hollow gold and silver oak leaves.",
+    "Valerian is plotting with the exiled royalty to overthrow the throne.",
+    "The Court of Shadows has placed spies behind the throne draperies."
+  ]
+}

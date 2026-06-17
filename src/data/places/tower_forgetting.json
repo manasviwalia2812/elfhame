@@ -1,0 +1,19 @@
+{
+  "id": "tower_forgetting",
+  "name": "Tower of Forgetting",
+  "color": "#b0c4de",
+  "x": 3.2,
+  "y": 1.8,
+  "z": 0.0,
+  "quote": "\"We have spoken of the dead. Now let us speak of the living.\"",
+  "description": "A grim prison built on an isolated spire. Those who defy the crown are locked away here to be slowly forgotten.",
+  "history": "Standing on a solitary basalt needle in the turbulent sea, the Tower of Forgetting is the primary prison of Elfhame. The waves crash constantly against its base, and the prison cells are damp, dark, and designed to drive captives insane.",
+  "events": [
+    "The imprisonment and torture of Cardan's brother, Prince Balekin.",
+    "The imprisonment of Jude Duarte by the Undersea's request."
+  ],
+  "secrets": [
+    "A secret key is hidden under the loose slate of the third pier.",
+    "Glamour rings are used to keep guards awake."
+  ]
+}

@@ -1,16 +1,20 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowLeft, MapPin } from 'lucide-react';
-import PalaceScene from './PalaceScene';
+import { ArrowLeft, MapPin, Milestone, History, Sparkles } from 'lucide-react';
+import FairyDust from './FairyDust';
+import palaceData from '../data/places/palace.json';
 import audioSynth from '../utils/audio';
 
 export default function PalacePage({ setGlobalLocation }) {
   const navigate = useNavigate();
 
-  // Update global guide location so Jude speaks about the Palace
+  // Manage custom scene audio and set global location
   useEffect(() => {
     setGlobalLocation('palace');
+    audioSynth.setScene('palace');
+    return () => {
+      audioSynth.setScene('default');
+    };
   }, [setGlobalLocation]);
 
   const handleReturn = () => {
@@ -18,57 +22,112 @@ export default function PalacePage({ setGlobalLocation }) {
     navigate('/book', { state: { returnFrom: 'palace' } });
   };
 
+  const handleReturnToMap = () => {
+    audioSynth.playMarkerClick();
+    navigate('/map');
+  };
+
   return (
-    <div className="full-screen-scene">
-      {/* 3D R3F Palace Scene */}
-      <PalaceScene activeScene="palace" />
+    <div className="full-screen-scene" style={{ background: '#020504', overflow: 'hidden' }}>
+      {/* HTML5 background video */}
+      <video
+        src="/environment/palace_of_elfhame.mp4"
+        autoPlay
+        loop
+        muted
+        playsInline
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          zIndex: 1,
+          opacity: 0.9
+        }}
+      />
+
+      {/* Fairy Dust overlaying the video background */}
+      <div style={{ position: 'absolute', inset: 0, zIndex: 2, pointerEvents: 'none' }}>
+        <FairyDust />
+      </div>
 
       {/* Return to book overlay button */}
       <button 
         className="btn-fantasy btn-return-book glow-gold" 
         onClick={handleReturn}
+        style={{ zIndex: 30 }}
       >
         📖 RETURN TO BOOK
       </button>
 
-      {/* Sidebar Details Panel (always visible in Palace Page) */}
-      <motion.div
+      {/* Sidebar Details Panel - Static div with no fade-out or transition animations to keep it fully visible */}
+      <div
         className="detail-sidebar gothic-border"
-        initial={{ opacity: 0, x: 50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ type: 'spring', damping: 25, stiffness: 120 }}
+        style={{
+          zIndex: 15,
+          maxHeight: 'calc(100vh - 48px)',
+          overflowY: 'auto'
+        }}
       >
-        <button className="btn-back" onClick={handleReturn}>
-          <ArrowLeft size={16} /> Return to Chapters
+        <button className="btn-back" onClick={handleReturnToMap} style={{ marginBottom: '10px' }}>
+          <ArrowLeft size={16} /> Return to Map
         </button>
 
         <div className="sidebar-divider" />
 
-        <h2 className="location-title" style={{ color: '#d4af37' }}>
-          Palace of Elfhame
+        <h2 className="location-title" style={{ color: palaceData.color }}>
+          {palaceData.name}
         </h2>
         
         <p className="location-quote">
-          "Most of all, I hate him because I think of him, often. It's like a disease."
+          {palaceData.quote}
         </p>
 
         <p className="location-desc">
-          The royal seat of the High King, balancing on trees and stone columns above the sea. Beautiful, intimidating, and filled with dark court intrigue.
+          {palaceData.description}
         </p>
 
-        <div className="sidebar-decor">
-          <MapPin size={24} style={{ color: '#d4af37' }} />
+        <div className="sidebar-divider" />
+
+        {/* History section */}
+        <div style={{ marginBottom: '20px' }}>
+          <h4 style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#d4af37', fontSize: '0.8rem', letterSpacing: '0.1em', marginBottom: '8px' }}>
+            <History size={14} /> HISTORY & ORIGIN
+          </h4>
+          <p style={{ fontSize: '0.82rem', lineHeight: '1.45', color: '#b0ab9f' }}>
+            {palaceData.history}
+          </p>
         </div>
 
-        <div className="location-secrets gothic-border">
-          <h4>COURT SECRETS</h4>
-          <ul>
-            <li>Cardan's crown is made of hollow gold and silver oak leaves.</li>
-            <li>Valerian is plotting with the exiled royalty to overthrow the throne.</li>
-            <li>The Court of Shadows has placed spies behind the throne draperies.</li>
+        {/* Major Events section */}
+        <div style={{ marginBottom: '20px' }}>
+          <h4 style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#d4af37', fontSize: '0.8rem', letterSpacing: '0.1em', marginBottom: '8px' }}>
+            <Milestone size={14} /> MAJOR EVENTS
+          </h4>
+          <ul style={{ listStyleType: 'square', marginLeft: '16px', fontSize: '0.8rem', lineHeight: '1.4', color: '#f5f3ef' }}>
+            {palaceData.events.map((event, idx) => (
+              <li key={idx} style={{ marginBottom: '6px' }}>{event}</li>
+            ))}
           </ul>
         </div>
-      </motion.div>
+
+            {/* Secrets section */}
+        <div style={{ marginBottom: '20px' }}>
+          <h4 style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#50c878', fontSize: '0.75rem', letterSpacing: '0.1em', marginBottom: '8px' }}>
+            <Sparkles size={14} /> COURT SECRETS
+          </h4>
+          <ul style={{ listStyleType: 'circle', marginLeft: '16px' }}>
+            {palaceData.secrets.map((secret, idx) => (
+              <li key={idx} style={{ fontSize: '0.8rem', lineHeight: '1.4', color: '#f5f3ef', marginBottom: '6px' }}>
+                {secret}
+              </li>
+            ))}
+          </ul>
+        </div>
+        
+      </div>
     </div>
   );
 }

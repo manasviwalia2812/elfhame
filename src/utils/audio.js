@@ -1,4 +1,6 @@
 import typewriterMp3 from './typewriter.mp3';
+import palaceMp3 from './kingdom_dance_tangled.mp3';
+import underseaMp3 from './Danny_Elfman_Moon_Dance.mp3';
 
 class ElfhameSynthesizer {
   constructor() {
@@ -16,6 +18,11 @@ class ElfhameSynthesizer {
       [103.83, 130.81, 155.56], // Ab2, C3, Eb3 (Ab Major)
     ];
     this.currentChordIndex = 0;
+    this.currentScene = 'default';
+    this.palaceAudio = null;
+    this.palaceGain = null;
+    this.underseaAudio = null;
+    this.underseaGain = null;
   }
 
   init() {
@@ -63,39 +70,202 @@ class ElfhameSynthesizer {
     
     this.isPlaying = true;
     
-    // Fade in Master
-    this.droneGain.gain.linearRampToValueAtTime(0.25, this.ctx.currentTime + 3.0);
-    
-    // Start Ambient Drone oscillators
-    this.startDrone();
-    
-    // Cycle harmonies every 6 seconds
-    this.harmonyInterval = setInterval(() => {
-      this.currentChordIndex = (this.currentChordIndex + 1) % this.currentChords.length;
-      this.updateDroneHarmony();
-      // Occasionally trigger a soft random background chime
-      if (Math.random() > 0.4) {
-        this.playRandomAmbientChime();
-      }
-    }, 6000);
+    if (this.currentScene === 'palace') {
+      this.playPalaceMusic();
+    } else if (this.currentScene === 'undersea') {
+      this.playUnderseaMusic();
+    } else {
+      // Fade in Master
+      this.droneGain.gain.linearRampToValueAtTime(0.25, this.ctx.currentTime + 3.0);
+      
+      // Start Ambient Drone oscillators
+      this.startDrone();
+      
+      // Cycle harmonies every 6 seconds
+      this.harmonyInterval = setInterval(() => {
+        this.currentChordIndex = (this.currentChordIndex + 1) % this.currentChords.length;
+        this.updateDroneHarmony();
+        // Occasionally trigger a soft random background chime
+        if (Math.random() > 0.4) {
+          this.playRandomAmbientChime();
+        }
+      }, 6000);
+    }
   }
 
   stop() {
     if (!this.isPlaying) return;
     
-    // Fade out
-    if (this.droneGain) {
-      this.droneGain.gain.linearRampToValueAtTime(0.0, this.ctx.currentTime + 1.5);
+    this.isPlaying = false;
+    this.stopTypewriterLoop();
+    
+    if (this.currentScene === 'palace') {
+      this.stopPalaceMusic();
+    } else if (this.currentScene === 'undersea') {
+      this.stopUnderseaMusic();
+    } else {
+      // Fade out
+      if (this.droneGain) {
+        this.droneGain.gain.linearRampToValueAtTime(0.0, this.ctx.currentTime + 1.5);
+      }
+      
+      setTimeout(() => {
+        this.oscillators.forEach(osc => {
+          try { osc.stop(); } catch(e) {}
+        });
+        this.oscillators = [];
+        clearInterval(this.harmonyInterval);
+      }, 1500);
+    }
+  }
+
+  setScene(sceneName) {
+    this.init();
+    const prevScene = this.currentScene;
+    if (prevScene === sceneName) return;
+    
+    this.currentScene = sceneName;
+    
+    // 1. Stop/Fade out whatever was playing
+    if (prevScene === 'palace') {
+      this.stopPalaceMusic();
+    } else if (prevScene === 'undersea') {
+      this.stopUnderseaMusic();
+    } else {
+      // Fade out ambient drone
+      clearInterval(this.harmonyInterval);
+      if (this.droneGain && this.ctx) {
+        this.droneGain.gain.cancelScheduledValues(this.ctx.currentTime);
+        this.droneGain.gain.linearRampToValueAtTime(0.0, this.ctx.currentTime + 1.0);
+      }
+      setTimeout(() => {
+        if (this.currentScene !== 'default') {
+          this.oscillators.forEach(osc => {
+            try { osc.stop(); } catch(e) {}
+          });
+          this.oscillators = [];
+        }
+      }, 1000);
     }
     
-    setTimeout(() => {
-      this.oscillators.forEach(osc => {
-        try { osc.stop(); } catch(e) {}
-      });
-      this.oscillators = [];
-      clearInterval(this.harmonyInterval);
-      this.isPlaying = false;
-    }, 1500);
+    // 2. Play/Fade in the new scene's sound
+    if (sceneName === 'palace') {
+      this.playPalaceMusic();
+    } else if (sceneName === 'undersea') {
+      this.playUnderseaMusic();
+    } else {
+      // Transition back to default
+      if (this.isPlaying) {
+        if (this.droneGain && this.ctx) {
+          this.droneGain.gain.cancelScheduledValues(this.ctx.currentTime);
+          this.droneGain.gain.linearRampToValueAtTime(0.25, this.ctx.currentTime + 1.5);
+        }
+        this.startDrone();
+        this.harmonyInterval = setInterval(() => {
+          this.currentChordIndex = (this.currentChordIndex + 1) % this.currentChords.length;
+          this.updateDroneHarmony();
+          if (Math.random() > 0.4) {
+            this.playRandomAmbientChime();
+          }
+        }, 6000);
+      }
+    }
+  }
+
+  playPalaceMusic() {
+    if (!this.ctx) return;
+    
+    if (!this.palaceAudio) {
+      this.palaceAudio = new Audio(palaceMp3);
+      this.palaceAudio.loop = true;
+      
+      try {
+        const source = this.ctx.createMediaElementSource(this.palaceAudio);
+        this.palaceGain = this.ctx.createGain();
+        this.palaceGain.gain.setValueAtTime(0, this.ctx.currentTime);
+        source.connect(this.palaceGain);
+        this.palaceGain.connect(this.masterGain);
+      } catch (e) {
+        console.error("Palace audio binding error:", e);
+        this.palaceAudio.volume = 0.5;
+      }
+    }
+    
+    if (this.isPlaying) {
+      this.palaceAudio.currentTime = 0;
+      this.palaceAudio.play().catch(e => console.error("Palace audio play error:", e));
+      if (this.palaceGain) {
+        this.palaceGain.gain.cancelScheduledValues(this.ctx.currentTime);
+        this.palaceGain.gain.setValueAtTime(0, this.ctx.currentTime);
+        this.palaceGain.gain.linearRampToValueAtTime(0.4, this.ctx.currentTime + 1.5);
+      }
+    }
+  }
+
+  stopPalaceMusic() {
+    if (this.palaceAudio) {
+      if (this.palaceGain && this.ctx) {
+        this.palaceGain.gain.cancelScheduledValues(this.ctx.currentTime);
+        this.palaceGain.gain.linearRampToValueAtTime(0.0, this.ctx.currentTime + 1.0);
+        setTimeout(() => {
+          if (this.currentScene !== 'palace') {
+            this.palaceAudio.pause();
+            this.palaceAudio.currentTime = 0;
+          }
+        }, 1000);
+      } else {
+        this.palaceAudio.pause();
+        this.palaceAudio.currentTime = 0;
+      }
+    }
+  }
+
+  playUnderseaMusic() {
+    if (!this.ctx) return;
+    
+    if (!this.underseaAudio) {
+      this.underseaAudio = new Audio(underseaMp3);
+      this.underseaAudio.loop = true;
+      
+      try {
+        const source = this.ctx.createMediaElementSource(this.underseaAudio);
+        this.underseaGain = this.ctx.createGain();
+        this.underseaGain.gain.setValueAtTime(0, this.ctx.currentTime);
+        source.connect(this.underseaGain);
+        this.underseaGain.connect(this.masterGain);
+      } catch (e) {
+        console.error("Undersea audio binding error:", e);
+        this.underseaAudio.volume = 0.5;
+      }
+    }
+    
+    if (this.isPlaying) {
+      this.underseaAudio.currentTime = 0;
+      this.underseaAudio.play().catch(e => console.error("Undersea audio play error:", e));
+      if (this.underseaGain) {
+        this.underseaGain.gain.cancelScheduledValues(this.ctx.currentTime);
+        this.underseaGain.gain.setValueAtTime(0, this.ctx.currentTime);
+        this.underseaGain.gain.linearRampToValueAtTime(0.4, this.ctx.currentTime + 1.5);
+      }
+    }
+  }
+
+  stopUnderseaMusic() {
+    if (this.underseaAudio) {
+      if (this.underseaGain && this.ctx) {
+        this.underseaGain.gain.cancelScheduledValues(this.ctx.currentTime);
+        this.underseaGain.gain.linearRampToValueAtTime(0.0, this.ctx.currentTime + 1.0);
+        setTimeout(() => {
+          if (this.currentScene !== 'undersea') {
+            this.underseaAudio.pause();
+            this.underseaAudio.currentTime = 0;
+          }
+        }, 1000);
+      } else {
+        this.underseaAudio.pause();
+        this.underseaAudio.currentTime = 0;
+      }
+    }
   }
 
   startDrone() {
@@ -140,18 +310,20 @@ class ElfhameSynthesizer {
   }
 
   playMarkerHover() {
-    if (!this.ctx) return;
+    if (!this.ctx || !this.isPlaying) return;
     const scale = [587.33, 783.99, 880.00, 1046.50, 1174.66]; // D, G, A, C, D
     const freq = scale[Math.floor(Math.random() * scale.length)];
     this.triggerPhysicalChime(freq, 0.05, 0.4);
   }
 
   playMarkerClick() {
-    if (!this.ctx) return;
+    if (!this.ctx || !this.isPlaying) return;
     const notes = [440, 554.37, 659.25, 880]; // A Major/Minor arpeggio
     notes.forEach((freq, idx) => {
       setTimeout(() => {
-        this.triggerPhysicalChime(freq * 1.5, 0.15, 0.8);
+        if (this.isPlaying) {
+          this.triggerPhysicalChime(freq * 1.5, 0.15, 0.8);
+        }
       }, idx * 80);
     });
   }

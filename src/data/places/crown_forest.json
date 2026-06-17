@@ -1,0 +1,19 @@
+{
+  "id": "crown_forest",
+  "name": "Crown Forest",
+  "color": "#2e5a1c",
+  "x": -1.6,
+  "y": 0.2,
+  "z": 0.0,
+  "quote": "\"Power is much easier to acquire than it is to hold onto.\"",
+  "description": "The ancient, dense woodland surrounding the palace. Home to wild beasts, rogue sprites, and hidden spy camps.",
+  "history": "The ancient forest spanning across the main island. It is thick, dark, and filled with wild magic. Rowan trees, briar patches, and glowing mushrooms dominate the landscape, harboring outcasts and secret rebel camps.",
+  "events": [
+    "The ambush of the royal carriage by rogue faerie bandits.",
+    "Jude's training runs with the Court of Shadows under the cover of night."
+  ],
+  "secrets": [
+    "The Roach keeps a hideout in the hollow of the Ironwood tree.",
+    "Ragwort horses roam the glade at midnight."
+  ]
+}

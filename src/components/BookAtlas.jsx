@@ -303,7 +303,6 @@ export default function BookAtlas({ setGlobalLocation }) {
               
               <div className="chapter-cover-vintage" style={{ zIndex: 11, padding: '1rem', width: '100%' }}>
                 <span className="chapter-label" style={{ color: '#8a6f27' }}>THE END OF THE JOURNEY</span>
-                <h2 className="chapter-headline" style={{ color: '#800e13', fontSize: '1.45rem', marginBottom: '15px' }}>THE BACK COVER</h2>
                 <div className="landing-divider" style={{ margin: '10px auto' }} />
                 <p className="chapter-desc" style={{ fontSize: '0.85rem', color: '#3d2f1f', fontStyle: 'italic', marginBottom: '20px' }}>
                   "If you hurt me, I will find a way to hurt you back. Twice as hard."
@@ -415,9 +414,6 @@ export default function BookAtlas({ setGlobalLocation }) {
                     >
                       🗺️ EXPLORE ELFHAME
                     </button>
-                    <p style={{ fontSize: '0.75rem', fontStyle: 'italic', marginTop: '10px', textAlign: 'center', opacity: 0.6 }}>
-                      (Or click the EXPLORE button on the left page)
-                    </p>
                   </div>
                 )}
 

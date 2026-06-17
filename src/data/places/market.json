@@ -1,0 +1,19 @@
+{
+  "id": "market",
+  "name": "Market District",
+  "color": "#b87333",
+  "x": -2.8,
+  "y": -1.5,
+  "z": 0.0,
+  "quote": "\"Sharpen your blade. Harden your heart.\"",
+  "description": "The docks and bustling market stalls where mortals and fae exchange enchanted wares, poisons, and rumors.",
+  "history": "The bustling harbor market where mortal merchants, goblin traders, and faerie nobility meet. A place of endless commerce, where one can buy anything from magical trinkets and sweet faerie fruits to deadly nightshade and secret letters.",
+  "events": [
+    "Jude's first encounter with the poisonous Blisterlamp sap vendor.",
+    "The smuggler deals arranged by the Roach for the Court of Shadows."
+  ],
+  "secrets": [
+    "The goblin merchant trades rowan wood berries for mortal teeth.",
+    "The Roach's scouts purchase nightshade concentrate here."
+  ]
+}

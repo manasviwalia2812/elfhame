@@ -5,89 +5,19 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 import audioSynth from '../utils/audio';
 
-// Location coordinate definitions on the tilted 3D plane
-export const locations = [
-  {
-    id: 'palace',
-    name: 'Palace of Elfhame',
-    x: 0.1,
-    y: 0.6,
-    z: 0.0,
-    color: '#d4af37', // Gold
-    description: 'The royal seat of the High King, balancing on trees and stone columns above the sea. Beautiful, intimidating, and filled with dark court intrigue.',
-    quote: '"Most of all, I hate him because I think of him, often. It\'s like a disease."',
-  },
-  {
-    id: 'hollow_hall',
-    name: 'Hollow Hall',
-    x: -2.2,
-    y: 1.4,
-    z: 0.0,
-    color: '#0f8558', // Emerald
-    description: 'The estate of General Madoc, Jude\'s foster father. A fortress of weapons, war planning, and ancient faerie military power.',
-    quote: '"If I cannot be better than them, I will become so much worse."',
-  },
-  {
-    id: 'tower_forgetting',
-    name: 'Tower of Forgetting',
-    x: 3.2,
-    y: 1.8,
-    z: 0.0,
-    color: '#b0c4de', // Silver
-    description: 'A grim prison built on an isolated spire. Those who defy the crown are locked away here to be slowly forgotten.',
-    quote: '"We have spoken of the dead. Now let us speak of the living."',
-  },
-  {
-    id: 'locke_estate',
-    name: 'Locke\'s Estate',
-    x: 1.6,
-    y: -0.6,
-    z: 0.0,
-    color: '#a82c2c', // Ruby
-    description: 'A place of sensory indulgence, wild feasts, and devious trickery. Where Locke hosts his decadent, chaotic gatherings.',
-    quote: '"If you hurt me, I will find a way to hurt you back. Twice as hard."',
-  },
-  {
-    id: 'lake_masks',
-    name: 'Lake of Masks',
-    x: -1.0,
-    y: -1.2,
-    z: 0.0,
-    color: '#1e5aa8', // Sapphire
-    description: 'A mystical body of water that reflects not your face, but your deepest illusions, desires, and secrets.',
-    quote: '"I want to win. I do not yearn to be good."',
-  },
-  {
-    id: 'crown_forest',
-    name: 'Crown Forest',
-    x: -1.6,
-    y: 0.2,
-    z: 0.0,
-    color: '#2e5a1c', // Forest Green
-    description: 'The ancient, dense woodland surrounding the palace. Home to wild beasts, rogue sprites, and hidden spy camps.',
-    quote: '"Power is much easier to acquire than it is to hold onto."',
-  },
-  {
-    id: 'undersea',
-    name: 'Undersea Kingdom',
-    x: 2.6,
-    y: -2.0,
-    z: 0.0,
-    color: '#1d8585', // Teal
-    description: 'The cold, vast aquatic domain ruled by Queen Orlagh. Cruel, deep, and constantly plotting to pull the land under.',
-    quote: '"In faerie, you can die of a transition."',
-  },
-  {
-    id: 'market',
-    name: 'Market District',
-    x: -2.8,
-    y: -1.5,
-    z: 0.0,
-    color: '#b87333', // Copper
-    description: 'The docks and bustling market stalls where mortals and fae exchange enchanted wares, poisons, and rumors.',
-    quote: '"Sharpen your blade. Harden your heart."',
-  }
-];
+import { placesData } from '../data/places';
+
+// Location coordinate definitions on the tilted 3D plane mapped from JSON files
+export const locations = placesData.map(place => ({
+  id: place.id,
+  name: place.name,
+  x: place.x,
+  y: place.y,
+  z: place.z,
+  color: place.color,
+  description: place.description,
+  quote: place.quote
+}));
 
 // Curvature bending math function for the atlas geometries
 const getCurveY = (x, y) => {
@@ -109,7 +39,7 @@ function AtlasControls({ selectedLocation, onTransitionComplete, hoveredLocation
 
   // Initialize camera and target positioning
   useEffect(() => {
-    camera.position.set(0, -2.8, 6.8);
+    camera.position.set(0, 2.8, 6.8);
     if (controlsRef.current) {
       controlsRef.current.target.set(0, 0, 0);
       controlsRef.current.update();
@@ -132,13 +62,13 @@ function AtlasControls({ selectedLocation, onTransitionComplete, hoveredLocation
 
         targetTarget.current.set(px, py, pz);
         // Zoom-in position: look down slightly closer
-        targetPosition.current.set(px, py - 1.2, pz + 1.85);
+        targetPosition.current.set(px, py + 1.2, pz + 1.85);
         isTransitioning.current = true;
       }
     } else {
       // Zoom out to overview
       targetTarget.current.set(0, 0, 0);
-      targetPosition.current.set(0, -2.8, 6.8);
+      targetPosition.current.set(0, 2.8, 6.8);
       isTransitioning.current = true;
     }
   }, [selectedLocation]);
@@ -215,8 +145,8 @@ function AtlasControls({ selectedLocation, onTransitionComplete, hoveredLocation
     <OrbitControls
       ref={controlsRef}
       minPolarAngle={Math.PI / 5.1} // 35 degrees
-      maxPolarAngle={Math.PI / 2.1} // 85 degrees
-      minDistance={2.8}
+      maxPolarAngle={Math.PI / 1.35} // 133 degrees
+      minDistance={1.8}
       maxDistance={11.0}
       enableDamping={true}
       dampingFactor={0.05}
@@ -530,7 +460,7 @@ export default function MapScene({ selectedLocation, onSelectLocation, onTransit
   return (
     <div className={`map-canvas-container ${activeScene !== 'map' ? 'dissolve' : ''}`}>
       <Canvas
-        camera={{ position: [0, -2.8, 6.8], fov: 60 }}
+        camera={{ position: [0, 2.8, 6.8], fov: 60 }}
         shadows
         gl={{ antialias: true }}
       >
