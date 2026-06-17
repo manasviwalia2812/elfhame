@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import emailjs from 'emailjs-com';
 import audioSynth from '../utils/audio';
 import QuillWriter from './QuillWriter';
 import goldFeather from '../assets/gold_feather.png';
@@ -21,6 +23,38 @@ export default function BookAtlas({ setGlobalLocation }) {
   const [currentPage, setCurrentPage] = useState(
     returnFrom === 'palace' ? 1 : (returnFrom === 'gallery' ? 2 : 0)
   );
+
+  // Contact section states
+  const [showContactModal, setShowContactModal] = useState(false);
+  const formRef = useRef();
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  const sendEmail = (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    emailjs
+      .sendForm(
+        "service_2jm4u0u",        
+        "template_0jzxepk",    
+        formRef.current,
+        "T76NSBdLm09PkD4Jr"        
+      )
+      .then(
+        () => {
+          setSent(true);
+          setLoading(false);
+          formRef.current.reset();
+          setTimeout(() => setSent(false), 5000);
+        },
+        (error) => {
+          console.error(error);
+          alert("Something went wrong. Please try again.");
+          setLoading(false);
+        }
+      );
+  };
   
   // Set initial turned state based on routing parameters
   const [pageStates, setPageStates] = useState(() => {
@@ -389,8 +423,8 @@ export default function BookAtlas({ setGlobalLocation }) {
 
                   <ul style={{
                     listStyle: 'none',
-                    padding: 0,
-                    lineHeight: '1.2'
+                    padding: 40,
+                    lineHeight: '2'
                   }}>
                     <li>Chapter I — The Realm</li>
                     <li>Chapter II — The Courts</li>
@@ -454,9 +488,11 @@ export default function BookAtlas({ setGlobalLocation }) {
                 
                 {/* --- CHAPTER I: THE REALM (RIGHT SPREAD) --- */}
                 {i === 0 && (
-                  <div className="chapter-details-vintage" style={{ position: 'relative', minHeight: 300 }}>
-                    <h3>THE LIVING MAP</h3>
-                    <div className="sidebar-divider" />
+                  <div className="chapter-cover-vintage" style={{ position: 'relative', minHeight: 300 }}>
+                    <span className="chapter-label">CHAPTER I</span>
+                    <h2 className="chapter-headline">THE REALM</h2>
+                    <div className="landing-divider" style={{ margin: '15px auto' }} />
+                    <h4 style={{ color: 'var(--gold-dark)', margin: '10px 0' }}>Explore the realms</h4>
                     <QuillWriter
                       text={`Select the button below to inspect realm lore, quotes, and hidden secrets. Navigate through Castle Elfhame, Locke's decadent ruins, the dangerous deep of the Undersea, or trade poisons in the Goblin market stalls.`}
                       active={currentPage === 0 && !isIntroAnimating && coverTurned}
@@ -569,7 +605,6 @@ export default function BookAtlas({ setGlobalLocation }) {
                 {i < NUM_PAGES && !isIntroAnimating && (
                   <button
                     onClick={() => handlePageTurn(i, 'next')}
-                    style={styles.navBtn}
                     className="book-nav-btn"
                     aria-label="next page"
                   >
@@ -689,16 +724,15 @@ export default function BookAtlas({ setGlobalLocation }) {
                 )}
 
                 {/* Prev arrow navigation on back pages */}
-                {!isIntroAnimating && (
+                {/* {!isIntroAnimating && (
                   <button
                     onClick={() => handlePageTurn(i, 'prev')}
-                    style={{ ...styles.navBtn, left: 16, right: "auto" }}
-                    className="book-nav-btn"
+                    className="book-nav-btn prev-btn"
                     aria-label="previous page"
                   >
                     ‹
                   </button>
-                )}
+                )} */}
               </div>
             </div>
           ))}
@@ -744,6 +778,266 @@ export default function BookAtlas({ setGlobalLocation }) {
         <button className="btn-fantasy btn-open-atlas glow-gold" onClick={handleOpenBook}>
           📖 OPEN ENCHANTED ATLAS
         </button>
+      )}
+
+      {/* Scribe's Contact Section (styled on parchment) */}
+      {!isClosed && (
+        <>
+          <button 
+            className="parchment-contact-tab"
+            onClick={() => setShowContactModal(true)}
+            style={{
+              position: 'absolute',
+              top: '20px',
+              left: '20px',
+              zIndex: 999,
+              pointerEvents: 'auto',
+              backgroundImage: "url('/environment/vintage_parchment_page.png')",
+              backgroundSize: 'cover',
+              backgroundColor: '#fffbf2',
+              border: '1.5px solid var(--gold-dark)',
+              borderRadius: '4px',
+              padding: '8px 16px',
+              fontFamily: "var(--font-display), 'Cinzel', serif",
+              fontSize: '0.72rem',
+              color: '#3d2f1f',
+              cursor: 'pointer',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.5), 0 0 5px rgba(212, 175, 55, 0.2)',
+              letterSpacing: '0.08em',
+              transition: 'all 0.3s ease',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.color = '#800e13';
+              e.currentTarget.style.borderColor = 'var(--gold-primary)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.color = '#3d2f1f';
+              e.currentTarget.style.borderColor = 'var(--gold-dark)';
+            }}
+          >
+            ✉️ Reach Scribe
+          </button>
+
+          <AnimatePresence>
+            {showContactModal && (
+              <motion.div 
+                className="contact-modal-overlay"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowContactModal(false)}
+                style={{
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  width: '100vw',
+                  height: '100vh',
+                  backgroundColor: 'rgba(0, 0, 0, 0.82)',
+                  zIndex: 10000,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '20px',
+                  pointerEvents: 'auto',
+                }}
+              >
+                <motion.div 
+                  className="contact-modal-content gothic-border"
+                  initial={{ scale: 0.95, y: 30 }}
+                  animate={{ scale: 1, y: 0 }}
+                  exit={{ scale: 0.95, y: 30 }}
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    backgroundImage: "url('/environment/vintage_parchment_page.png')",
+                    backgroundSize: 'cover',
+                    backgroundColor: '#fffbf2',
+                    border: '2px solid var(--gold-primary)',
+                    borderRadius: '8px',
+                    padding: '30px 35px',
+                    width: '100%',
+                    maxWidth: '580px',
+                    color: '#2c2419',
+                    position: 'relative',
+                    boxShadow: '0 25px 60px rgba(0,0,0,0.9), 0 0 30px rgba(212, 175, 55, 0.25)',
+                  }}
+                >
+                  <button 
+                    onClick={() => setShowContactModal(false)}
+                    style={{
+                      position: 'absolute',
+                      top: '15px',
+                      right: '15px',
+                      background: 'transparent',
+                      border: 'none',
+                      fontSize: '1.25rem',
+                      color: '#800e13',
+                      cursor: 'pointer',
+                      fontFamily: 'var(--font-display)',
+                    }}
+                  >
+                    ✕
+                  </button>
+
+                  <h2 style={{
+                    fontFamily: "'RusticRoadway', 'Cinzel', serif",
+                    color: '#800e13',
+                    fontSize: '1.65rem',
+                    textAlign: 'center',
+                    margin: '0 0 5px 0',
+                    letterSpacing: '0.04em'
+                  }}>
+                    Reach out to the Scribe ✨
+                  </h2>
+                  <div className="landing-divider" style={{ backgroundColor: 'var(--gold-dark)', height: '1.5px', width: '80%', margin: '8px auto 16px' }} />
+
+                  <p style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '0.82rem',
+                    lineHeight: '1.45',
+                    color: '#4e3e2c',
+                    textAlign: 'center',
+                    marginBottom: '20px',
+                  }}>
+                    Please contact me for any additions, changes, credits/licensing issues, or mistakes in the chronicles.
+                  </p>
+
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    gap: '15px',
+                    marginBottom: '20px',
+                    flexWrap: 'wrap',
+                  }}>
+                    <a 
+                      href="https://personal-portfolio-five-mauve-64.vercel.app/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="contact-social-link"
+                    >
+                      🌐 Portfolio
+                    </a>
+                    <a 
+                      href="https://www.linkedin.com/in/manasvi-walia-581b0a2b0/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="contact-social-link"
+                    >
+                      🔗 LinkedIn
+                    </a>
+                    <a 
+                      href="https://github.com/manasviwalia2812/elfhame" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="contact-social-link"
+                    >
+                      📂 GitHub Repo
+                    </a>
+                  </div>
+
+                  {sent && (
+                    <p style={{
+                      color: '#1b5e20',
+                      fontSize: '0.82rem',
+                      fontWeight: 'bold',
+                      textAlign: 'center',
+                      marginBottom: '15px',
+                      background: 'rgba(27, 94, 32, 0.1)',
+                      padding: '8px',
+                      borderRadius: '4px',
+                      border: '1px solid rgba(27, 94, 32, 0.3)'
+                    }}>
+                      ✅ Message sent successfully. Check your inbox!
+                    </p>
+                  )}
+
+                  <form 
+                    ref={formRef} 
+                    onSubmit={sendEmail}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '12px',
+                    }}
+                  >
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="Your name"
+                      required
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        borderBottom: '1.5px solid rgba(138, 111, 39, 0.45)',
+                        padding: '6px 4px',
+                        fontSize: '0.88rem',
+                        color: '#2c2419',
+                        fontFamily: 'var(--font-body)',
+                        outline: 'none',
+                      }}
+                      className="parchment-input"
+                    />
+
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="Your email"
+                      required
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        borderBottom: '1.5px solid rgba(138, 111, 39, 0.45)',
+                        padding: '6px 4px',
+                        fontSize: '0.88rem',
+                        color: '#2c2419',
+                        fontFamily: 'var(--font-body)',
+                        outline: 'none',
+                      }}
+                      className="parchment-input"
+                    />
+
+                    <textarea
+                      name="message"
+                      placeholder="Your message"
+                      rows="3"
+                      required
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        borderBottom: '1.5px solid rgba(138, 111, 39, 0.45)',
+                        padding: '6px 4px',
+                        fontSize: '0.88rem',
+                        color: '#2c2419',
+                        fontFamily: 'var(--font-body)',
+                        outline: 'none',
+                        resize: 'none',
+                      }}
+                      className="parchment-input"
+                    />
+
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="btn-fantasy"
+                      style={{
+                        marginTop: '10px',
+                        padding: '8px 24px',
+                        alignSelf: 'center',
+                        fontSize: '0.82rem',
+                      }}
+                    >
+                      {loading ? "Sending..." : "Send message ✉️"}
+                    </button>
+                  </form>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </>
       )}
     </div>
   );

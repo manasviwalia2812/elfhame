@@ -598,7 +598,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 4;
+  z-index: 15;
   pointer-events: none;
   padding: 20px;
   transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1);
@@ -1280,21 +1280,73 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-/* Enlarge book navigation buttons & custom cursor on hover/active */
+/* Custom gold book navigation buttons */
 .book-nav-btn {
-  font-size: 5.5rem !important;
-  font-weight: 300 !important;
-  color: var(--gold-primary) !important;
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  font-size: 2.2rem !important;
+  font-weight: bold !important;
+  color: #4e3615 !important;
+  background: rgba(28, 21, 17, 0.06);
+  border: 1.5px solid rgba(138, 111, 39, 0.45);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
   cursor: url('./assets/cursor.png'), auto !important;
-  transition: color 0.3s ease, transform 0.3s ease, opacity 0.3s ease !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1), 0 0 5px rgba(212, 175, 55, 0.2);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  line-height: 0 !important;
+  padding-bottom: 5px !important;
+  z-index: 100;
+}
+
+.book-nav-btn.prev-btn {
+  left: 24px;
+  right: auto;
 }
 
 .book-nav-btn:hover {
-  color: var(--gold-light) !important;
-  transform: scale(1.15) !important;
+  color: #800e13 !important;
+  background: rgba(28, 21, 17, 0.12);
+  border-color: #8a6f27;
+  transform: scale(1.1) !important;
+  box-shadow: 0 4px 12px rgba(138, 111, 39, 0.3), 0 0 10px rgba(212, 175, 55, 0.4);
 }
 
 .book-nav-btn:active {
   cursor: url('./assets/cursor.png'), auto !important;
+  transform: scale(0.95) !important;
+}
+
+/* Contact Modal Social Links & Inputs */
+.contact-social-link {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  color: #5c4017;
+  text-decoration: none;
+  border: 1.5px solid rgba(138, 111, 39, 0.4);
+  border-radius: 4px;
+  padding: 6px 14px;
+  background: rgba(138, 111, 39, 0.05);
+  transition: all 0.3s ease;
+  letter-spacing: 0.05em;
+  font-weight: bold;
+}
+
+.contact-social-link:hover {
+  color: #800e13;
+  border-color: #8a6f27;
+  background: rgba(138, 111, 39, 0.12);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(138, 111, 39, 0.2);
+}
+
+.parchment-input:focus {
+  border-bottom-color: #800e13 !important;
+  box-shadow: 0 1px 0 #800e13;
 }
 
