@@ -13,12 +13,16 @@ import CharacterGuide from './components/CharacterGuide';
 import FairyDust from './components/FairyDust';
 import FolkGallery from './components/FolkGallery';
 import audioSynth from './utils/audio';
+import AssetLoader from './components/AssetLoader';
+import { ASSET_MANIFEST } from './data/assetManifest';
 
 export default function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <AssetLoader manifest={ASSET_MANIFEST}>
+      <Router>
+        <AppContent />
+      </Router>
+    </AssetLoader>
   );
 }
 
@@ -26,7 +30,9 @@ function AppContent() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [audioEnabled, setAudioEnabled] = useState(false);
+  const [audioEnabled, setAudioEnabled] = useState(() => {
+    return localStorage.getItem('elfhame_audio_enabled') === 'true';
+  });
   const [volume, setVolume] = useState(0.35);
   const [showHelp, setShowHelp] = useState(false);
   const [showLandingContent, setShowLandingContent] = useState(false);
@@ -34,6 +40,15 @@ function AppContent() {
   const [welcomeActive, setWelcomeActive] = useState(false);
 
   const isLanding = location.pathname === '/';
+
+  // Restore audio synth on mount if enabled
+  useEffect(() => {
+    if (audioEnabled) {
+      audioSynth.start();
+      audioSynth.setVolume(volume);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Landing content delay timer
   useEffect(() => {
@@ -50,10 +65,12 @@ function AppContent() {
     if (audioEnabled) {
       audioSynth.stop();
       setAudioEnabled(false);
+      localStorage.setItem('elfhame_audio_enabled', 'false');
     } else {
       audioSynth.start();
       audioSynth.setVolume(volume);
       setAudioEnabled(true);
+      localStorage.setItem('elfhame_audio_enabled', 'true');
     }
   };
 
@@ -67,6 +84,7 @@ function AppContent() {
     audioSynth.start();
     audioSynth.setVolume(volume);
     setAudioEnabled(true);
+    localStorage.setItem('elfhame_audio_enabled', 'true');
     setWelcomeActive(true);
     navigate('/book');
   };

@@ -76,7 +76,7 @@ export default function QuillWriter({
 
       timers.push(setTimeout(() => {
         setPhase('writing');
-        audioSynth.playTypewriterLoop && audioSynth.playTypewriterLoop();
+        audioSynth.playWritingLoop && audioSynth.playWritingLoop();
         runTypewriter();
       }, dipTotalTime + TRAVEL_DURATION * 1000));
     }, 1000));
@@ -89,7 +89,7 @@ export default function QuillWriter({
           setDisplayedText(text.slice(0, charIndexRef.current));
           timers.push(setTimeout(tick, CHAR_INTERVAL));
         } else {
-          audioSynth.stopTypewriterLoop && audioSynth.stopTypewriterLoop();
+          audioSynth.stopWritingLoop && audioSynth.stopWritingLoop();
           setPhase('returning');
           timers.push(setTimeout(() => {
             setPhase('done');
@@ -102,7 +102,7 @@ export default function QuillWriter({
 
     return () => {
       timers.forEach(clearTimeout);
-      audioSynth.stopTypewriterLoop && audioSynth.stopTypewriterLoop();
+      audioSynth.stopWritingLoop && audioSynth.stopWritingLoop();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active, text]);

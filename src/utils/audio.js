@@ -3,6 +3,9 @@ import palaceMp3 from './kingdom_dance_tangled.mp3';
 import underseaMp3 from './Danny_Elfman_Moon_Dance.mp3';
 import forestMp3 from './Ramin_Djawadi_Light_of_the_Seven.mp3';
 import towerMp3 from './dark_horror_mystic_ambient.mp3';
+import writingMp3 from './writing.mp3';
+import pageFlipMp3 from './page_flip.mp3';
+import pageShuffleMp3 from './page_shuffle.mp3';
 
 class ElfhameSynthesizer {
   constructor() {
@@ -29,6 +32,9 @@ class ElfhameSynthesizer {
     this.forestGain = null;
     this.towerAudio = null;
     this.towerGain = null;
+    this.writingAudio = null;
+    this.pageFlipAudio = null;
+    this.pageShuffleAudio = null;
   }
 
   init() {
@@ -67,12 +73,10 @@ class ElfhameSynthesizer {
 
   start() {
     this.init();
-    if (this.isPlaying) return;
-    
-    // Resume context if suspended
-    if (this.ctx.state === 'suspended') {
+    if (this.ctx && this.ctx.state === 'suspended') {
       this.ctx.resume();
     }
+    if (this.isPlaying) return;
     
     this.isPlaying = true;
     
@@ -108,6 +112,7 @@ class ElfhameSynthesizer {
     
     this.isPlaying = false;
     this.stopTypewriterLoop();
+    this.stopWritingLoop();
     
     if (this.currentScene === 'palace') {
       this.stopPalaceMusic();
@@ -428,14 +433,19 @@ class ElfhameSynthesizer {
   }
 
   playMarkerHover() {
-    if (!this.ctx || !this.isPlaying) return;
+    if (!this.isPlaying) return;
+    this.init();
     const scale = [587.33, 783.99, 880.00, 1046.50, 1174.66]; // D, G, A, C, D
     const freq = scale[Math.floor(Math.random() * scale.length)];
     this.triggerPhysicalChime(freq, 0.05, 0.4);
   }
 
   playMarkerClick() {
-    if (!this.ctx || !this.isPlaying) return;
+    if (!this.isPlaying) return;
+    this.init();
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume().catch(e => console.error("Marker click resume context failed:", e));
+    }
     const notes = [440, 554.37, 659.25, 880]; // A Major/Minor arpeggio
     notes.forEach((freq, idx) => {
       setTimeout(() => {
@@ -447,7 +457,7 @@ class ElfhameSynthesizer {
   }
 
   triggerPhysicalChime(frequency, gainVal, decayTime) {
-    if (!this.ctx || this.ctx.state === 'suspended') return;
+    if (!this.ctx) return;
     
     const osc = this.ctx.createOscillator();
     const osc2 = this.ctx.createOscillator();
@@ -482,7 +492,8 @@ class ElfhameSynthesizer {
   }
 
   playTypingSound() {
-    if (!this.ctx || this.ctx.state === 'suspended' || !this.isPlaying) return;
+    if (!this.isPlaying) return;
+    this.init();
     
     // Very quiet, tiny high frequency pluck for typewriter effect
     const osc = this.ctx.createOscillator();
@@ -505,11 +516,23 @@ class ElfhameSynthesizer {
   }
 
   playTypewriterLoop() {
-    if (!this.ctx || this.ctx.state === 'suspended' || !this.isPlaying) return;
+    console.log("[playTypewriterLoop] called, isPlaying:", this.isPlaying, "ctx state:", this.ctx?.state);
+    if (!this.isPlaying) {
+      console.warn("[playTypewriterLoop] bypassed: not playing");
+      return;
+    }
+    this.init();
+    
+    if (this.ctx && this.ctx.state === 'suspended') {
+      console.log("[playTypewriterLoop] ctx suspended. Attempting to resume...");
+      this.ctx.resume().catch(e => console.error("[playTypewriterLoop] resume context failed:", e));
+    }
     
     if (this.typewriterAudio) {
       this.typewriterAudio.currentTime = 0;
-      this.typewriterAudio.play().catch(e => console.error(e));
+      this.typewriterAudio.play()
+        .then(() => console.log("[playTypewriterLoop] cached audio playing successfully"))
+        .catch(e => console.error("[playTypewriterLoop] cached play error:", e));
       return;
     }
 
@@ -519,17 +542,106 @@ class ElfhameSynthesizer {
     try {
       const source = this.ctx.createMediaElementSource(this.typewriterAudio);
       source.connect(this.masterGain);
+      console.log("[playTypewriterLoop] connected media source to masterGain");
     } catch (e) {
+      console.error("[playTypewriterLoop] media source connection failed, falling back to volume:", e);
       this.typewriterAudio.volume = 0.35;
     }
     
-    this.typewriterAudio.play().catch(e => console.error(e));
+    this.typewriterAudio.play()
+      .then(() => console.log("[playTypewriterLoop] new audio playing successfully"))
+      .catch(e => console.error("[playTypewriterLoop] new play error:", e));
   }
 
   stopTypewriterLoop() {
+    console.log("[stopTypewriterLoop] called");
     if (this.typewriterAudio) {
       this.typewriterAudio.pause();
       this.typewriterAudio.currentTime = 0;
+    }
+  }
+
+  playPageFlip() {
+    if (!this.isPlaying) return;
+    this.init();
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume().catch(e => console.error("Page flip resume context failed:", e));
+    }
+    if (!this.pageFlipAudio) {
+      this.pageFlipAudio = new Audio(pageFlipMp3);
+      try {
+        const source = this.ctx.createMediaElementSource(this.pageFlipAudio);
+        source.connect(this.masterGain);
+      } catch (e) {
+        this.pageFlipAudio.volume = 0.5;
+      }
+    }
+    this.pageFlipAudio.currentTime = 0;
+    this.pageFlipAudio.play().catch(e => console.error("Page flip play error:", e));
+  }
+
+  playPageShuffle() {
+    if (!this.isPlaying) return;
+    this.init();
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume().catch(e => console.error("Page shuffle resume context failed:", e));
+    }
+    if (!this.pageShuffleAudio) {
+      this.pageShuffleAudio = new Audio(pageShuffleMp3);
+      try {
+        const source = this.ctx.createMediaElementSource(this.pageShuffleAudio);
+        source.connect(this.masterGain);
+      } catch (e) {
+        this.pageShuffleAudio.volume = 0.5;
+      }
+    }
+    this.pageShuffleAudio.currentTime = 0;
+    this.pageShuffleAudio.play().catch(e => console.error("Page shuffle play error:", e));
+  }
+
+  playWritingLoop() {
+    console.log("[playWritingLoop] called, isPlaying:", this.isPlaying, "ctx state:", this.ctx?.state);
+    if (!this.isPlaying) {
+      console.warn("[playWritingLoop] bypassed: not playing");
+      return;
+    }
+    this.init();
+    
+    if (this.ctx && this.ctx.state === 'suspended') {
+      console.log("[playWritingLoop] ctx suspended. Attempting to resume...");
+      this.ctx.resume().catch(e => console.error("[playWritingLoop] resume context failed:", e));
+    }
+    
+    if (this.writingAudio) {
+      this.writingAudio.currentTime = 0;
+      this.writingAudio.play()
+        .then(() => console.log("[playWritingLoop] cached audio playing successfully"))
+        .catch(e => console.error("[playWritingLoop] cached play error:", e));
+      return;
+    }
+
+    this.writingAudio = new Audio(writingMp3);
+    this.writingAudio.loop = true;
+    
+    try {
+      const source = this.ctx.createMediaElementSource(this.writingAudio);
+      source.connect(this.masterGain);
+      console.log("[playWritingLoop] connected media source to masterGain");
+    } catch (e) {
+      console.error("[playWritingLoop] media source connection failed, falling back to volume:", e);
+      this.writingAudio.volume = 0.35;
+    }
+    
+    this.writingAudio.play()
+      .then(() => console.log("[playWritingLoop] new audio playing successfully"))
+      .catch(e => console.error("[playWritingLoop] new play error:", e));
+  }
+
+  stopWritingLoop() {
+    console.log("[stopWritingLoop] called");
+    if (this.writingAudio) {
+      this.writingAudio.pause();
+      this.writingAudio.currentTime = 0;
     }
   }
 

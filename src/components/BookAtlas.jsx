@@ -153,7 +153,7 @@ export default function BookAtlas({ setGlobalLocation }) {
         return next;
       });
       setCurrentPage(index + 1);
-      audioSynth.playMarkerClick();
+      audioSynth.playPageFlip();
     } else {
       setPageStates((prev) => {
         const next = [...prev];
@@ -168,7 +168,7 @@ export default function BookAtlas({ setGlobalLocation }) {
         return next;
       });
       setCurrentPage(index);
-      audioSynth.playMarkerClick();
+      audioSynth.playPageFlip();
     }
   };
 
@@ -207,7 +207,7 @@ export default function BookAtlas({ setGlobalLocation }) {
   // Close the book cover and reset to front page from the end of the book
   const handleReturnToFront = () => {
     console.log("RETURN TO FRONT CLICKED");
-    audioSynth.playMarkerClick();
+    audioSynth.playPageShuffle();
 
     setIsIntroAnimating(true);
 
