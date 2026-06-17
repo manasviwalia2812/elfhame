@@ -45,6 +45,10 @@ export const ASSET_MANIFEST = [
   { url: '/characters/balekin/balekin.png', type: 'image' },
   { url: '/characters/eldred/eldred.png', type: 'image' },
   { url: '/characters/grimson/grimson.png', type: 'image' },
+  { url: '/characters/vivienne/vivienne.png', type: 'image' },
+  { url: '/characters/valerian/valerian.png', type: 'image' },
+  { url: '/characters/heather/heather.png', type: 'image' },
+  { url: '/characters/oriana/oriana.png', type: 'image' },
 
   // Imported Assets
   { url: goldFeather, type: 'image' },
