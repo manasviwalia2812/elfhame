@@ -4,6 +4,8 @@ import audioSynth from '../utils/audio';
 import QuillWriter from './QuillWriter';
 import goldFeather from '../assets/gold_feather.png';
 import inkPot from '../assets/ink_pot.png';
+import frontCover from '../assets/bookcover/frontcover.png';
+import backCover from '../assets/bookcover/backcover.png';
 
 const NUM_PAGES = 6; // Chapters I to VI
 
@@ -278,7 +280,7 @@ export default function BookAtlas({ setGlobalLocation }) {
         
         <div style={{
           ...styles.coverRightUnder,
-          backgroundImage: (currentPage === NUM_PAGES) ? "url('/src/assets/bookcover/backcover.png')" : "url('/src/assets/bookcover/frontcover.png')",
+          backgroundImage: (currentPage === NUM_PAGES) ? `url(${backCover})` : `url(${frontCover})`,
           backgroundSize: "cover",
           opacity: isClosed ? 0 : 1,
           transition: "backgroundImage 0.6s ease-in-out, opacity 0.6s ease-in-out",
@@ -329,7 +331,7 @@ export default function BookAtlas({ setGlobalLocation }) {
           {/* Inside Cover: rendered as a gorgeous parchment page when open */}
           <div style={{
             ...styles.coverRightBack,
-            backgroundImage: isClosed ? "url('/src/assets/bookcover/backcover.png')" : "url('/environment/vintage_parchment_page.png')",
+            backgroundImage: isClosed ? `url(${backCover})` : "url('/environment/vintage_parchment_page.png')",
             backgroundColor: isClosed ? "transparent" : "#fff2df",
             backgroundSize: "cover",
             backgroundPosition: "center",
@@ -690,7 +692,7 @@ const styles = {
     left: 0,
     width: "50%",
     height: "100%",
-    backgroundImage: "url('/src/assets/bookcover/backcover.png')",
+    backgroundImage: `url(${backCover})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
     borderTopLeftRadius: "0.6rem",
@@ -704,7 +706,7 @@ const styles = {
     left: "50%",
     width: "50%",
     height: "100%",
-    backgroundImage: "url('/src/assets/bookcover/frontcover.png')",
+    backgroundImage: `url(${frontCover})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
     borderTopRightRadius: "0.6rem",
@@ -728,7 +730,7 @@ const styles = {
     left: 0,
     width: "100%",
     height: "100%",
-    backgroundImage: "url('/src/assets/bookcover/frontcover.png')",
+    backgroundImage: `url(${frontCover})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
     borderTopRightRadius: "0.6rem",
