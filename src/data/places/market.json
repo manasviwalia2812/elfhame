@@ -1,9 +1,9 @@
 {
   "id": "market",
-  "name": "Market District",
+  "name": "Mandrake Market",
   "color": "#b87333",
-  "x": -2.8,
-  "y": -1.5,
+  "x": -0.7,
+  "y": -0.3,
   "z": 0.0,
   "quote": "\"Sharpen your blade. Harden your heart.\"",
   "description": "The docks and bustling market stalls where mortals and fae exchange enchanted wares, poisons, and rumors.",

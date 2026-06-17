@@ -6,6 +6,8 @@ import lake_masks from './places/lake_masks.json';
 import crown_forest from './places/crown_forest.json';
 import undersea from './places/undersea.json';
 import market from './places/market.json';
+import court_of_shadows from './places/court_of_shadows.json';
+import madocs_household from './places/madocs_household.json';
 
 export const placesData = [
   palace,
@@ -15,7 +17,9 @@ export const placesData = [
   lake_masks,
   crown_forest,
   undersea,
-  market
+  market,
+  court_of_shadows,
+  madocs_household
 ];
 
 export default placesData;

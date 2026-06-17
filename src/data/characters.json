@@ -22,6 +22,50 @@
     "summary": "Cruel, beautiful, and clever, Cardan holds the ultimate power of Elfhame yet detests his own royal duties. Underneath his dramatic arrogance lies a sharp mind and a growing obsession with Jude."
   },
   {
+    "id": "vivienne",
+    "name": "Vivienne Duarte",
+    "titles": ["Lady of the Undersea", "Daughter of Madoc"],
+    "age": "20",
+    "species": "Half-Faerie",
+    "residence": "The Undersea",
+    "image": "/characters/vivienne/vivienne.png",
+    "background": "Vivienne is Jude's older sister and the biological daughter of Madoc and a faerie woman. Unlike Jude and Taryn, she possesses faerie magic and spent much of her life trying to shield her sisters from the dangers of Elfhame. Refusing to become a pawn in court politics, she fled to the Undersea and later fell in love with the sea-folk prince Oak's tutor, Heather.",
+    "summary": "Independent, compassionate, and fiercely protective, Vivienne rejects the cruelty and manipulation of the faerie courts. Though gifted with powerful faerie abilities, she values freedom and family above status or ambition."
+  },
+  {
+    "id": "valerian",
+    "name": "Valerian",
+    "titles": ["Prince of the High Court"],
+    "age": "Unknown",
+    "species": "Faerie (High Fae)",
+    "residence": "Palace of Elfhame",
+    "image": "/characters/valerian/valerian.png",
+    "background": "Valerian is a member of Prince Cardan's circle and one of Jude Duarte's most relentless tormentors during her years at court. Cruel and arrogant, he delights in humiliating mortals and uses his status to maintain power over others. His hatred of Jude grows as she repeatedly defies expectations and rises within the court.",
+    "summary": "Proud, vicious, and deeply prejudiced against mortals, Valerian embodies the casual cruelty of Elfhame's nobility. He views Jude as beneath him, underestimating the danger posed by her determination and cunning."
+  },
+  {
+    "id": "heather",
+    "name": "Heather",
+    "titles": ["Mortal Companion of Vivienne"],
+    "age": "Unknown",
+    "species": "Mortal (Human)",
+    "residence": "The Undersea",
+    "image": "/characters/heather/heather.png",
+    "background": "Heather is a mortal girl from the human world who becomes romantically involved with Vivienne. Drawn into the hidden world of faeries, she struggles to understand its dangers and deceptions. Despite being overwhelmed by the strange realities of Elfhame, she remains deeply devoted to Vivienne.",
+    "summary": "Kind-hearted, practical, and courageous, Heather serves as an outsider's perspective on the faerie world. Her love for Vivienne often places her in situations far beyond the ordinary life she once knew."
+  },
+  {
+    "id": "oriana",
+    "name": "Oriana",
+    "titles": ["Lady of Elfhame", "Wife of Madoc"],
+    "age": "Unknown",
+    "species": "Faerie",
+    "residence": "Hollow Hall",
+    "image": "/characters/oriana/oriana.png",
+    "background": "Oriana is Madoc's second wife and the stepmother of Jude, Taryn, and Vivienne. Although she did not choose to raise mortal children, she fulfills her duties toward them and helps maintain order within Hollow Hall. She often prioritizes survival and propriety over affection, reflecting the values of faerie society.",
+    "summary": "Elegant, pragmatic, and emotionally reserved, Oriana is neither openly cruel nor especially nurturing. She navigates the complexities of family and court life with caution, always mindful of status and reputation."
+  },
+  {
     "id": "madoc",
     "name": "Madoc",
     "titles": ["Grand General of Elfhame", "Lord of Hollow Hall"],
@@ -108,5 +152,49 @@
     "image": "/characters/oak/oak.png",
     "background": "Oak is the biological son of Prince Dain and Jude's faerie sister Vivienne. Jude hid his royal heritage to protect him and sent him to be raised in the mortal world until he is ready to claim the throne.",
     "summary": "Oak is a playful, innocent child who loves his foster sisters. He is the key heir to the throne of Elfhame, and Jude does everything in her power to protect him from court corruption."
+  },
+  {
+    "id": "dain",
+    "name": "Prince Dain Greenbriar",
+    "titles": ["Prince of the High Court", "Leader of the Circle of Falcons"],
+    "age": "Decades",
+    "species": "Faerie (High Fae)",
+    "residence": "Palace of Elfhame",
+    "image": "/characters/dain/dain.png",
+    "background": "The third son of King Eldred, Dain is a regal, calculating prince who secretly patronizes the Court of Shadows. While he presents himself as the most fit to rule, he is cold-hearted and ruthlessly manipulative, binding others to geases.",
+    "summary": "Polished and commanding, Dain uses secrets and magical bindings as weapons. Underneath his regal posture lies a willingness to sacrifice his own kin for the crown."
+  },
+  {
+    "id": "balekin",
+    "name": "Prince Balekin Greenbriar",
+    "titles": ["Eldest Prince of Elfhame", "Leader of the Circle of Grackles"],
+    "age": "Decades",
+    "species": "Faerie (High Fae)",
+    "residence": "Hollow Hall",
+    "image": "/characters/balekin/balekin.png",
+    "background": "The eldest son of High King Eldred, Balekin is cruel and sadistic. He believes the crown is his by birthright and leads the Circle of Grackles. He physically and emotionally abused his younger brother, Cardan, for years.",
+    "summary": "Balekin is a brute-force antagonist driven by entitlement. He relies on threat, violence, and dark pacts to claim the High King's seat."
+  },
+  {
+    "id": "eldred",
+    "name": "High King Eldred Greenbriar",
+    "titles": ["High King of Elfhame", "Lord of the Greenbriar Lineage"],
+    "age": "Hundreds of years",
+    "species": "Faerie (High Fae)",
+    "residence": "Palace of Elfhame",
+    "image": "/characters/eldred/eldred.png",
+    "background": "The long-ruling High King of Elfhame who grows weary of his crown. His distant, prophecy-plagued parenting left Cardan neglected. Eldred's plan to abdicate the throne sparks a deadly, bloody struggle among his heirs.",
+    "summary": "Eldred is a weary, fading king. His inability to manage the bloodlust of his heirs ultimately leads to the collapse of his long reign."
+  },
+  {
+    "id": "grimson",
+    "name": "Grimsen",
+    "titles": ["Master Blacksmith", "Artisan of Cursed Relics"],
+    "age": "Decades",
+    "species": "Faerie (Alder Fae)",
+    "residence": "Exiled / High Court of Elfhame",
+    "image": "/characters/grimson/grimson.png",
+    "background": "A legendary, opportunistic faerie blacksmith who was exiled from the High Court. He forged the blood-crown of Elfhame and is known for creating items carrying powerful, cursed consequences.",
+    "summary": "A master blacksmith whose items hold double-edged magic. Grimsen serves whoever offers him power, though his loyalty is as fickle as his craft."
   }
 ]

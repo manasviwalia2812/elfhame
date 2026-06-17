@@ -1,0 +1,21 @@
+{
+  "id": "madocs_household",
+  "name": "Madoc's Household",
+  "color": "#b22222",
+  "x": -1.8,
+  "y": -2.9,
+  "z": 0.0,
+  "quote": "\"He raised me to be a warrior, but he also taught me how to betray.\"",
+  "description": "The residence of Grand General Madoc, where Jude, Taryn, and Vivienne were raised. A household where weapons are toys and war is family business.",
+  "history": "After murdering Jude's parents, General Madoc brought the mortal twins and their half-fae sister here to Hollow Hall's residential household. Here, they learned swordsmanship and court protocol, forever living as mortal targets in a lethal world.",
+  "events": [
+    "General Madoc's training duels with Jude Duarte in the courtyard.",
+    "The arrival of Prince Balekin for secret war deliberations.",
+    "Taryn and Jude's preparation for their presentation to the High King."
+  ],
+  "secrets": [
+    "Madoc keeps his private letters to Prince Balekin locked in the desk's secret compartment.",
+    "Jude hid a stash of stolen poisons under the loose floorboard in her bedroom.",
+    "The family dining room has a secret exit leading to the stables."
+  ]
+}

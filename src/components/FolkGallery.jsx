@@ -16,7 +16,15 @@ const characterTags = {
   bomb: ["Sprite", "Liliver", "Shadow"],
   ghost: ["Half-Fae", "Garrett", "Shadow"],
   nicassia: ["Undersea", "Princess", "Gentry"],
-  oak: ["High Fae", "Prince", "Heir"]
+  oak: ["High Fae", "Prince", "Heir"],
+  dain: ["High Fae", "Prince", "Falcon"],
+  balekin: ["High Fae", "Prince", "Grackle"],
+  eldred: ["High Fae", "King", "Royal"],
+  grimson: ["Artisan", "Blacksmith", "Exile"],
+  vivienne: ["Half-Fae", "Lady", "Protector"],
+  valerian: ["High Fae", "Noble", "Cruel"],
+  heather: ["Mortal", "Companion", "Artist"],
+  oriana: ["High Fae", "Lady", "Pragmatic"]
 };
 
 export default function FolkGallery({ setGlobalLocation }) {
@@ -143,7 +151,7 @@ export default function FolkGallery({ setGlobalLocation }) {
         <section className="gallery-carousel">
           {activeItems.map((item, index) => {
             const isMiddle = index === 2;
-            const tags = characterTags[item.id] || ["Folk"];
+            const tags = characterTags[item.id] || (item.titles && item.titles.length > 0 ? item.titles : ["Folk"]);
 
             return (
               <article 

@@ -1,9 +1,9 @@
 {
   "id": "crown_forest",
-  "name": "Crown Forest",
+  "name": "Crooked Forest",
   "color": "#2e5a1c",
-  "x": -1.6,
-  "y": 0.2,
+  "x": -2,
+  "y": 2.3,
   "z": 0.0,
   "quote": "\"Power is much easier to acquire than it is to hold onto.\"",
   "description": "The ancient, dense woodland surrounding the palace. Home to wild beasts, rogue sprites, and hidden spy camps.",

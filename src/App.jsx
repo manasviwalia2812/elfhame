@@ -38,6 +38,9 @@ function AppContent() {
   const [showLandingContent, setShowLandingContent] = useState(false);
   const [globalLocation, setGlobalLocation] = useState('landing');
   const [welcomeActive, setWelcomeActive] = useState(false);
+  const [visitorCount, setVisitorCount] = useState(() => {
+    return parseInt(localStorage.getItem('elfhame_visitor_count') || '0', 10);
+  });
 
   const isLanding = location.pathname === '/';
 
@@ -85,7 +88,15 @@ function AppContent() {
     audioSynth.setVolume(volume);
     setAudioEnabled(true);
     localStorage.setItem('elfhame_audio_enabled', 'true');
-    setWelcomeActive(true);
+    
+    // Check if remembered
+    const rememberedUntil = localStorage.getItem('elfhame_remembered_until');
+    const now = Date.now();
+    if (rememberedUntil && parseInt(rememberedUntil, 10) > now) {
+      setWelcomeActive(false);
+    } else {
+      setWelcomeActive(true);
+    }
     navigate('/book');
   };
 
@@ -198,6 +209,9 @@ function AppContent() {
                         <button className="btn-fantasy btn-enter glow-gold" onClick={handleStart}>
                           ENTER THE COURT
                         </button>
+                        <div className="visitor-badge" style={{ marginTop: '1.2rem', fontFamily: "var(--font-display)", fontSize: '0.85rem', color: 'var(--gold-primary)', letterSpacing: '0.05em', textShadow: '0 0 5px rgba(212,175,55,0.4)', opacity: 0.9 }}>
+                          📜 MORTAL SOULS REGISTERED: <span style={{ fontSize: '1rem', color: '#fff', marginLeft: '5px' }}>{visitorCount}</span>
+                        </div>
                       </motion.div>
 
                       <motion.div 
@@ -286,6 +300,9 @@ function AppContent() {
         isVisible={!isLanding}
         isWelcomeActive={welcomeActive}
         onCloseWelcome={() => setWelcomeActive(false)}
+        onVisitorRegistered={() => {
+          setVisitorCount(parseInt(localStorage.getItem('elfhame_visitor_count') || '0', 10));
+        }}
       />
 
       {/* HELP MODAL */}
@@ -314,6 +331,9 @@ function AppContent() {
                 <li><strong>Jude Duarte</strong>: Your guide who warns you of the dangers of the court.</li>
                 <li><strong>Palace of Elfhame</strong>: Transitions into a fully immersive, 3D golden hall.</li>
               </ul>
+              <div style={{ marginTop: '1.2rem', marginBottom: '1rem', padding: '8px', border: '1px dashed rgba(212,175,55,0.3)', borderRadius: '4px', textAlign: 'center', fontSize: '0.82rem', fontFamily: 'var(--font-display)', color: 'var(--gold-light)' }}>
+                🏰 TOTAL UNIQUE VISITORS REGISTERED: {visitorCount}
+              </div>
               <button className="btn-fantasy" onClick={() => setShowHelp(false)}>CLOSE</button>
             </motion.div>
           </motion.div>

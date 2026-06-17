@@ -65,7 +65,30 @@ const dialogueData = {
   }
 };
 
-export default function CharacterGuide({ currentLocation, isVisible, isWelcomeActive, onCloseWelcome }) {
+const welcomeDialogues = [
+  {
+    greeting: "Welcome to Elfhame, mortal.",
+    text: "You step into a land of dangerous beauty, ancient secrets, and blood-soaked crowns. I am Jude Duarte, your guide. This experience is recommended to be seen on laptops or big screens.",
+    quote: '"If I cannot be better than them, I will become so much worse."'
+  },
+  {
+    greeting: "The Threat of a Name",
+    text: "In folklore, fey want names to gain magical leverage and authority over mortals. A name isn't just a label; it represents your identity, soul, and destiny. By acquiring it, fey can exert absolute control over your actions, use it as currency, or bind you to unbreakable magical contracts.",
+    quote: '"A name is a weapon, and faeries are weapon-masters."'
+  },
+  {
+    greeting: "State Your Name",
+    text: "You must state your name before entering the Realm of Faeries",
+    quote: ""
+  },
+  {
+    greeting: "The Rules of Survival",
+    text: "Tip: If you want to survive the faerie courts, listen closely:\n\nnever eat their fruit, never dance in their circles, and never, ever make a bargain you cannot afford.",
+    quote: '"Harden your heart. Keep your head."'
+  }
+];
+
+export default function CharacterGuide({ currentLocation, isVisible, isWelcomeActive, onCloseWelcome, onVisitorRegistered }) {
   const [dialogue, setDialogue] = useState(dialogueData.landing);
   const [isBlinking, setIsBlinking] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -76,13 +99,29 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
   const [displayedQuote, setDisplayedQuote] = useState('');
   const [typingComplete, setTypingComplete] = useState(false);
 
+  // Welcome stepper states
+  const [welcomeStep, setWelcomeStep] = useState(0);
+  const [userName, setUserName] = useState('');
+
+  // Reset welcome step when active state changes
   useEffect(() => {
-    const key = currentLocation || 'map';
-    if (dialogueData[key]) {
-      setDialogue(dialogueData[key]);
-      if (currentLocation && !isWelcomeActive) audioSynth.playMarkerHover();
+    if (isWelcomeActive) {
+      setWelcomeStep(0);
+      setUserName('');
     }
-  }, [currentLocation, isWelcomeActive]);
+  }, [isWelcomeActive]);
+
+  useEffect(() => {
+    if (isWelcomeActive) {
+      setDialogue(welcomeDialogues[welcomeStep]);
+    } else {
+      const key = currentLocation || 'map';
+      if (dialogueData[key]) {
+        setDialogue(dialogueData[key]);
+        if (currentLocation) audioSynth.playMarkerHover();
+      }
+    }
+  }, [currentLocation, isWelcomeActive, welcomeStep]);
 
   useEffect(() => {
     const textVal = dialogue.text || '';
@@ -140,6 +179,21 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
     };
   }, [dialogue, currentLocation, isWelcomeActive]);
 
+  const handleNameSubmit = () => {
+    audioSynth.playMarkerClick();
+    const finalCount = parseInt(localStorage.getItem('elfhame_visitor_count') || '0', 10) + 1;
+    localStorage.setItem('elfhame_visitor_count', finalCount.toString());
+    
+    // Remember for 3.5 days
+    const expirationTime = Date.now() + 3.5 * 24 * 60 * 60 * 1000;
+    localStorage.setItem('elfhame_remembered_until', expirationTime.toString());
+    
+    if (onVisitorRegistered) {
+      onVisitorRegistered();
+    }
+    setWelcomeStep(3);
+  };
+
   // Global click listener for skipping typewriter or advancing in welcome screen
   useEffect(() => {
     if (!isWelcomeActive) return;
@@ -151,8 +205,18 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
         setDisplayedQuote(dialogue.quote || '');
         audioSynth.stopTypewriterLoop();
       } else {
-        audioSynth.playMarkerClick();
-        onCloseWelcome();
+        if (welcomeStep === 0) {
+          audioSynth.playMarkerClick();
+          setWelcomeStep(1);
+        } else if (welcomeStep === 1) {
+          audioSynth.playMarkerClick();
+          setWelcomeStep(2);
+        } else if (welcomeStep === 2) {
+          // Name input step, clicking does nothing
+        } else if (welcomeStep === 3) {
+          audioSynth.playMarkerClick();
+          onCloseWelcome();
+        }
       }
     };
 
@@ -164,7 +228,7 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
       clearTimeout(timer);
       window.removeEventListener('click', handleGlobalClick);
     };
-  }, [isWelcomeActive, typingComplete, dialogue, onCloseWelcome]);
+  }, [isWelcomeActive, typingComplete, dialogue, onCloseWelcome, welcomeStep]);
 
   useEffect(() => {
     const blinkInterval = setInterval(() => {
@@ -291,6 +355,56 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
                 <span className="typewriter-cursor">|</span>
               )}
             </p>
+            {isWelcomeActive && welcomeStep === 2 && typingComplete && (
+              <div 
+                className="name-input-container" 
+                onClick={(e) => e.stopPropagation()} 
+                style={{
+                  marginTop: '15px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                  width: '100%'
+                }}
+              >
+                <input
+                  type="text"
+                  placeholder="Enter your name, mortal..."
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  className="gothic-input"
+                  style={{
+                    padding: '8px 12px',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid var(--gold-dark)',
+                    borderRadius: '4px',
+                    color: '#fff',
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '0.9rem',
+                    outline: 'none',
+                    transition: 'all 0.3s ease',
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleNameSubmit();
+                    }
+                  }}
+                  autoFocus
+                />
+                <button
+                  onClick={handleNameSubmit}
+                  className="btn-fantasy whisper-btn"
+                  style={{
+                    alignSelf: 'flex-end',
+                    padding: '6px 16px',
+                    fontSize: '0.8rem',
+                  }}
+                >
+                  Confirm Name
+                </button>
+              </div>
+            )}
             {displayedQuote && (
               <div className="dialogue-quote">
                 <span>{displayedQuote}</span>
@@ -299,14 +413,14 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
                 )}
               </div>
             )}
-            {typingComplete && isWelcomeActive && (
+            {typingComplete && isWelcomeActive && welcomeStep !== 2 && (
               <motion.div 
                 className="click-to-proceed"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: [0.3, 1, 0.3] }}
                 transition={{ repeat: Infinity, duration: 2 }}
               >
-                Click anywhere to continue ›
+                {welcomeStep === 3 ? "Enter the Realm ›" : "Click anywhere to continue ›"}
               </motion.div>
             )}
           </motion.div>
@@ -481,12 +595,21 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
           padding-bottom: 4px;
         }
 
-        .dialogue-text {
+         .dialogue-text {
           font-family: var(--font-body);
           font-size: 0.9rem;
           line-height: 1.4;
           color: var(--text-light);
           margin-bottom: 10px;
+          white-space: pre-wrap;
+        }
+
+        .gothic-input:focus {
+          border-color: var(--gold-primary) !important;
+          box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+        }
+        .whisper-btn {
+          width: fit-content;
         }
 
         .dialogue-quote {

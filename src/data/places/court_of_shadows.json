@@ -1,0 +1,21 @@
+{
+  "id": "court_of_shadows",
+  "name": "Court of Shadows",
+  "color": "#8b6bb8",
+  "x": -1.7,
+  "y": 0.9,
+  "z": 0.0,
+  "quote": "\"We are the shadows in the dark, the whispers in the ears of kings.\"",
+  "description": "A subterranean network of spies, assassins, and thieves led by the Roach. Built into hidden root caverns, they serve Prince Dain and gather secrets from every corner of Elfhame.",
+  "history": "Formed in secret, the Court of Shadows operates from dark root chambers deep beneath the forest floor. They deal in the most dangerous currency of Elfhame: secrets, lies, and poisons. Their loyalty belongs only to their leader and their craft.",
+  "events": [
+    "Jude Duarte was inducted and trained in espionage and combat by the Roach.",
+    "Stealing the coronation invitation and plotting the royal counter-coup.",
+    "Infiltrating Balekin's fortress to rescue captured spies."
+  ],
+  "secrets": [
+    "The hideout entrances are hidden beneath the roots of hollow oak trees.",
+    "The Bomb keeps gunpowder kegs hidden behind the cellar bricks.",
+    "A spy is hidden behind the curtains in every major court chamber."
+  ]
+}
