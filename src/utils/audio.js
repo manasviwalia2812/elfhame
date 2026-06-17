@@ -1,3 +1,5 @@
+import typewriterMp3 from './typewriter.mp3';
+
 class ElfhameSynthesizer {
   constructor() {
     this.ctx = null;
@@ -187,6 +189,58 @@ class ElfhameSynthesizer {
     
     osc.stop(this.ctx.currentTime + decayTime + 0.1);
     osc2.stop(this.ctx.currentTime + decayTime + 0.1);
+  }
+
+  playTypingSound() {
+    if (!this.ctx || this.ctx.state === 'suspended' || !this.isPlaying) return;
+    
+    // Very quiet, tiny high frequency pluck for typewriter effect
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    
+    osc.type = 'sine';
+    // Randomize slightly for a more organic feel
+    const baseFreq = 800 + Math.random() * 400;
+    osc.frequency.setValueAtTime(baseFreq, this.ctx.currentTime);
+    
+    gain.gain.setValueAtTime(0.001, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.008, this.ctx.currentTime + 0.005);
+    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.03);
+    
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+    
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.04);
+  }
+
+  playTypewriterLoop() {
+    if (!this.ctx || this.ctx.state === 'suspended' || !this.isPlaying) return;
+    
+    if (this.typewriterAudio) {
+      this.typewriterAudio.currentTime = 0;
+      this.typewriterAudio.play().catch(e => console.error(e));
+      return;
+    }
+
+    this.typewriterAudio = new Audio(typewriterMp3);
+    this.typewriterAudio.loop = true;
+    
+    try {
+      const source = this.ctx.createMediaElementSource(this.typewriterAudio);
+      source.connect(this.masterGain);
+    } catch (e) {
+      this.typewriterAudio.volume = 0.35;
+    }
+    
+    this.typewriterAudio.play().catch(e => console.error(e));
+  }
+
+  stopTypewriterLoop() {
+    if (this.typewriterAudio) {
+      this.typewriterAudio.pause();
+      this.typewriterAudio.currentTime = 0;
+    }
   }
 
   setVolume(volume) {

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, X } from 'lucide-react';
 import charactersData from '../data/characters.json';
 import audioSynth from '../utils/audio';
+import FairyDust from './FairyDust';
 
 // Map of tags for each character to match the visual styling
 const characterTags = {
@@ -110,6 +111,9 @@ export default function FolkGallery({ setGlobalLocation }) {
 
   return (
     <div className="gallery-root">
+      {/* Fairy Dust behind the carousel wrapper */}
+      <FairyDust />
+
       {/* Return to Map/Book button */}
       <div style={{ position: 'absolute', top: '24px', left: '24px', zIndex: 10 }}>
         <button 

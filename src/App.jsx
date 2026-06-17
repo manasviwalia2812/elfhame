@@ -28,6 +28,7 @@ function AppContent() {
   const [showHelp, setShowHelp] = useState(false);
   const [showLandingContent, setShowLandingContent] = useState(false);
   const [globalLocation, setGlobalLocation] = useState('landing');
+  const [welcomeActive, setWelcomeActive] = useState(false);
 
   const isLanding = location.pathname === '/';
 
@@ -63,6 +64,7 @@ function AppContent() {
     audioSynth.start();
     audioSynth.setVolume(volume);
     setAudioEnabled(true);
+    setWelcomeActive(true);
     navigate('/book');
   };
 
@@ -209,12 +211,39 @@ function AppContent() {
       </Routes>
 
       {/* Global Fairy Dust overlaying the 3D Scenes */}
-      {!isLanding && <FairyDust />}
+      {!isLanding && !welcomeActive && location.pathname !== '/gallery' && <FairyDust />}
+
+      {/* WELCOME INTRO OVERLAY */}
+      <AnimatePresence>
+        {welcomeActive && (
+          <motion.div 
+            className="welcome-black-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2 }}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              backgroundColor: '#000000',
+              zIndex: 80,
+              pointerEvents: 'all',
+            }}
+          >
+            <FairyDust />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* JUDE DUARTE GUIDE PANEL */}
       <CharacterGuide
-        currentLocation={globalLocation}
+        currentLocation={welcomeActive ? 'landing' : globalLocation}
         isVisible={!isLanding}
+        isWelcomeActive={welcomeActive}
+        onCloseWelcome={() => setWelcomeActive(false)}
       />
 
       {/* HELP MODAL */}

@@ -83,7 +83,7 @@ export default function BookAtlas({ setGlobalLocation }) {
   }, [currentPage]);
 
   const gameStateForGuide = () => {
-    if (!coverTurned) return 'landing';
+    if (!coverTurned) return 'book';
     return 'book';
   };
 

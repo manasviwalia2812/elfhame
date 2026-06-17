@@ -57,22 +57,114 @@ const dialogueData = {
     greeting: "The Market District",
     text: "Where mortals, goblins, and noble fae mingle. Here, secrets are traded like spices, and poisons are sold in vials of silver. It is the only place in Elfhame where gold carries more weight than bloodlines.",
     quote: '"Secrets are the most valuable currency in all of Elfhame."'
+  },
+  gallery: {
+    greeting: "The Folk of Elfhame",
+    text: "Here lie the portraits of those who command and crawl in the High Court. Nobles, outcasts, and mortals alike. In the gallery, cards reveal their loyalties, their heritage, and their betrayals. Study them, for knowledge is the only shield against their glamour.",
+    quote: '"If I cannot be better than them, I will become so much worse."'
   }
 };
 
-export default function CharacterGuide({ currentLocation, isVisible }) {
+export default function CharacterGuide({ currentLocation, isVisible, isWelcomeActive, onCloseWelcome }) {
   const [dialogue, setDialogue] = useState(dialogueData.landing);
   const [isBlinking, setIsBlinking] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);   // ← new
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const turbulenceRef = useRef(null);
+
+  // Typewriter states
+  const [displayedText, setDisplayedText] = useState('');
+  const [displayedQuote, setDisplayedQuote] = useState('');
+  const [typingComplete, setTypingComplete] = useState(false);
 
   useEffect(() => {
     const key = currentLocation || 'map';
     if (dialogueData[key]) {
       setDialogue(dialogueData[key]);
-      if (currentLocation) audioSynth.playMarkerHover();
+      if (currentLocation && !isWelcomeActive) audioSynth.playMarkerHover();
     }
-  }, [currentLocation]);
+  }, [currentLocation, isWelcomeActive]);
+
+  useEffect(() => {
+    const textVal = dialogue.text || '';
+    const quoteVal = dialogue.quote || '';
+
+    // If welcome is not active, display instantly and bypass typewriter
+    if (!isWelcomeActive) {
+      setDisplayedText(textVal);
+      setDisplayedQuote(quoteVal);
+      setTypingComplete(true);
+      return;
+    }
+
+    // Reset and run typewriter sequence when dialogue changes
+    setDisplayedText('');
+    setDisplayedQuote('');
+    setTypingComplete(false);
+
+    let textTimer;
+    let quoteTimer;
+    
+    let textCharIndex = 0;
+    let quoteCharIndex = 0;
+
+    // Start playing typewriter loop sound
+    audioSynth.playTypewriterLoop();
+
+    const typeText = () => {
+      if (textCharIndex < textVal.length) {
+        setDisplayedText(textVal.substring(0, textCharIndex + 1));
+        textCharIndex++;
+        textTimer = setTimeout(typeText, 25);
+      } else {
+        setTimeout(typeQuote, 300);
+      }
+    };
+
+    const typeQuote = () => {
+      if (quoteCharIndex < quoteVal.length) {
+        setDisplayedQuote(quoteVal.substring(0, quoteCharIndex + 1));
+        quoteCharIndex++;
+        quoteTimer = setTimeout(typeQuote, 25);
+      } else {
+        setTypingComplete(true);
+        audioSynth.stopTypewriterLoop();
+      }
+    };
+
+    typeText();
+
+    return () => {
+      clearTimeout(textTimer);
+      clearTimeout(quoteTimer);
+      audioSynth.stopTypewriterLoop();
+    };
+  }, [dialogue, currentLocation, isWelcomeActive]);
+
+  // Global click listener for skipping typewriter or advancing in welcome screen
+  useEffect(() => {
+    if (!isWelcomeActive) return;
+
+    const handleGlobalClick = () => {
+      if (!typingComplete) {
+        setTypingComplete(true);
+        setDisplayedText(dialogue.text || '');
+        setDisplayedQuote(dialogue.quote || '');
+        audioSynth.stopTypewriterLoop();
+      } else {
+        audioSynth.playMarkerClick();
+        onCloseWelcome();
+      }
+    };
+
+    const timer = setTimeout(() => {
+      window.addEventListener('click', handleGlobalClick);
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('click', handleGlobalClick);
+    };
+  }, [isWelcomeActive, typingComplete, dialogue, onCloseWelcome]);
 
   useEffect(() => {
     const blinkInterval = setInterval(() => {
@@ -101,12 +193,17 @@ export default function CharacterGuide({ currentLocation, isVisible }) {
   if (!isVisible) return null;
 
   const handlePortraitClick = () => {
+    if (isWelcomeActive) return; // ignore collapse clicks during welcome intro
     audioSynth.playMarkerClick();
     setIsCollapsed(prev => !prev);
   };
 
   return (
-    <div className="character-guide-root">
+    <motion.div 
+      layout
+      className={`character-guide-root ${isWelcomeActive ? 'welcome-centered' : ''}`}
+      transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+    >
       <svg style={{ position: 'absolute', width: 0, height: 0 }}>
         <filter id="jude-wind-filter">
           <feTurbulence
@@ -131,8 +228,8 @@ export default function CharacterGuide({ currentLocation, isVisible }) {
         <div
           className="jude-image-container"
           onClick={handlePortraitClick}
-          style={{ cursor: 'pointer' }}
-          title={isCollapsed ? 'Open dialogue' : 'Close dialogue'}
+          style={{ cursor: isWelcomeActive ? 'default' : 'pointer' }}
+          title={isWelcomeActive ? undefined : (isCollapsed ? 'Open dialogue' : 'Close dialogue')}
         >
           <img
             src="/characters/jude/judeduarte.jpeg"
@@ -142,19 +239,21 @@ export default function CharacterGuide({ currentLocation, isVisible }) {
           <div className="jude-backlight" />
 
           {/* Collapse/expand hint tab on the right edge of the portrait */}
-          <motion.div
-            className="jude-toggle-tab"
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.2 }}
-          >
-            <motion.span
-              animate={{ rotate: isCollapsed ? 0 : 180 }}
-              transition={{ duration: 0.35, ease: 'easeInOut' }}
-              style={{ display: 'inline-block', lineHeight: 1 }}
+          {!isWelcomeActive && (
+            <motion.div
+              className="jude-toggle-tab"
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.2 }}
             >
-              ›
-            </motion.span>
-          </motion.div>
+              <motion.span
+                animate={{ rotate: isCollapsed ? 0 : 180 }}
+                transition={{ duration: 0.35, ease: 'easeInOut' }}
+                style={{ display: 'inline-block', lineHeight: 1 }}
+              >
+                ›
+              </motion.span>
+            </motion.div>
+          )}
         </div>
       </div>
 
@@ -163,19 +262,18 @@ export default function CharacterGuide({ currentLocation, isVisible }) {
         className="dialogue-box gothic-border"
         initial={false}
         animate={{
-          width: isCollapsed ? 0 : 'auto',
+          width: isCollapsed ? 0 : '100%',
           opacity: isCollapsed ? 0 : 1,
-          marginLeft: isCollapsed ? 0 : undefined,
-          paddingLeft: isCollapsed ? 0 : undefined,
-          paddingRight: isCollapsed ? 0 : undefined,
         }}
         transition={{
           width:   { duration: 0.4, ease: [0.4, 0, 0.2, 1] },
           opacity: { duration: 0.25, ease: 'easeInOut' },
-          paddingLeft:  { duration: 0.4 },
-          paddingRight: { duration: 0.4 },
         }}
-        style={{ overflow: 'hidden', whiteSpace: isCollapsed ? 'nowrap' : 'normal' }}
+        style={{ 
+          overflow: 'hidden', 
+          whiteSpace: isCollapsed ? 'nowrap' : 'normal',
+          boxSizing: 'border-box'
+        }}
       >
         <AnimatePresence mode="wait">
           <motion.div
@@ -187,10 +285,30 @@ export default function CharacterGuide({ currentLocation, isVisible }) {
             className="dialogue-content"
           >
             <h3 className="dialogue-title">{dialogue.greeting}</h3>
-            <p className="dialogue-text">{dialogue.text}</p>
-            <div className="dialogue-quote">
-              <span>{dialogue.quote}</span>
-            </div>
+            <p className="dialogue-text">
+              {displayedText}
+              {!typingComplete && displayedText.length < (dialogue.text || '').length && (
+                <span className="typewriter-cursor">|</span>
+              )}
+            </p>
+            {displayedQuote && (
+              <div className="dialogue-quote">
+                <span>{displayedQuote}</span>
+                {!typingComplete && displayedText.length === (dialogue.text || '').length && (
+                  <span className="typewriter-cursor">|</span>
+                )}
+              </div>
+            )}
+            {typingComplete && isWelcomeActive && (
+              <motion.div 
+                className="click-to-proceed"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0.3, 1, 0.3] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+              >
+                Click anywhere to continue ›
+              </motion.div>
+            )}
           </motion.div>
         </AnimatePresence>
       </motion.div>
@@ -206,6 +324,88 @@ export default function CharacterGuide({ currentLocation, isVisible }) {
           z-index: 20;
           pointer-events: none;
           max-width: 60%;
+        }
+
+        .character-guide-root.welcome-centered {
+          position: fixed;
+          bottom: calc(50vh - 120px);
+          left: calc(50vw - 375px);
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          gap: 30px;
+          z-index: 100;
+          max-width: 750px;
+          width: 90%;
+          pointer-events: auto;
+        }
+
+        .character-guide-root.welcome-centered .jude-wrapper {
+          width: 180px;
+          height: 240px;
+        }
+
+        .character-guide-root.welcome-centered .dialogue-box {
+          max-width: var(--dialogue-box-width);
+          width: 100%;
+          padding: 24px 30px;
+          border-width: 2px;
+          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9), 0 0 20px rgba(212, 175, 55, 0.25);
+        }
+
+        .character-guide-root.welcome-centered .dialogue-text {
+          font-size: 1.05rem;
+          line-height: 1.5;
+        }
+
+        .character-guide-root.welcome-centered .dialogue-title {
+          font-size: 1.25rem;
+          margin-bottom: 12px;
+        }
+
+        .typewriter-cursor {
+          display: inline-block;
+          width: 2px;
+          background-color: var(--gold-primary);
+          margin-left: 4px;
+          animation: blink 0.8s infinite;
+          line-height: 1;
+        }
+
+        .click-to-proceed {
+          font-size: 0.85rem;
+          color: var(--gold-primary);
+          text-align: right;
+          margin-top: 15px;
+          font-family: var(--font-display);
+          letter-spacing: 0.05em;
+          opacity: 0.8;
+          text-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
+        }
+
+        @keyframes blink {
+          50% { opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+          .character-guide-root.welcome-centered {
+            flex-direction: column !important;
+            bottom: auto !important;
+            left: 5% !important;
+            top: 15vh !important;
+            width: 90% !important;
+            gap: 15px !important;
+            max-width: 100% !important;
+          }
+          .character-guide-root.welcome-centered .jude-wrapper {
+            width: 110px !important;
+            height: 150px !important;
+          }
+          .character-guide-root.welcome-centered .dialogue-box {
+            --dialogue-box-width: 500px;
+            max-width: 100% !important;
+            padding: 16px 20px !important;
+          }
         }
 
         .jude-wrapper {
@@ -342,7 +542,20 @@ export default function CharacterGuide({ currentLocation, isVisible }) {
           cursor: pointer;
           z-index: 2;
         }
+        .dialogue-content {
+          white-space: normal;
+        }
+        @media (max-width: 768px) {
+          .dialogue-box {
+            --dialogue-box-width: 320px;
+            max-width: var(--dialogue-box-width);
+          }
+          .character-guide-root.welcome-centered .dialogue-box {
+            --dialogue-box-width: 320px;   /* was 500px from desktop — needs override here too */
+            max-width: 100%;               /* fine to keep as a true viewport safety cap */
+          }
+        }
       `}</style>
-    </div>
+    </motion.div>
   );
 }
