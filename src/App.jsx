@@ -40,6 +40,7 @@ function AppContent() {
   const [showHelp, setShowHelp] = useState(false);
   const [showLandingContent, setShowLandingContent] = useState(false);
   const [globalLocation, setGlobalLocation] = useState('landing');
+  const [palaceSceneData, setPalaceSceneData] = useState(null);
   const [welcomeActive, setWelcomeActive] = useState(false);
   const [visitorCount, setVisitorCount] = useState(() => {
     return parseInt(localStorage.getItem('elfhame_visitor_count') || '0', 10);
@@ -54,6 +55,21 @@ function AppContent() {
       audioSynth.setVolume(volume);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Fetch global visitor count from CounterAPI on app mount
+  useEffect(() => {
+    fetch('https://api.counterapi.dev/v1/projects/elfhame-atlas/counters/visitors')
+      .then(res => res.json())
+      .then(data => {
+        if (data && typeof data.value === 'number') {
+          setVisitorCount(data.value);
+          localStorage.setItem('elfhame_visitor_count', data.value.toString());
+        }
+      })
+      .catch(err => {
+        console.warn("Failed to fetch global counter, using local:", err);
+      });
   }, []);
 
   // Landing content delay timer
@@ -92,14 +108,8 @@ function AppContent() {
     setAudioEnabled(true);
     localStorage.setItem('elfhame_audio_enabled', 'true');
     
-    // Check if remembered
-    const rememberedUntil = localStorage.getItem('elfhame_remembered_until');
-    const now = Date.now();
-    if (rememberedUntil && parseInt(rememberedUntil, 10) > now) {
-      setWelcomeActive(false);
-    } else {
-      setWelcomeActive(true);
-    }
+    // Always show the welcome active state so users see welcome/rules, Jude decides returning logic
+    setWelcomeActive(true);
     navigate('/book');
   };
 
@@ -250,7 +260,7 @@ function AppContent() {
 
         {/* 3D Palace Hall View */}
         <Route path="/palace" element={
-          <PalacePage setGlobalLocation={setGlobalLocation} />
+          <PalacePage setGlobalLocation={setGlobalLocation} onSceneChange={setPalaceSceneData} />
         } />
 
         {/* Undersea Kingdom View */}
@@ -304,8 +314,18 @@ function AppContent() {
         isWelcomeActive={welcomeActive}
         onCloseWelcome={() => setWelcomeActive(false)}
         onVisitorRegistered={() => {
-          setVisitorCount(parseInt(localStorage.getItem('elfhame_visitor_count') || '0', 10));
+          fetch('https://api.counterapi.dev/v1/projects/elfhame-atlas/counters/visitors')
+            .then(res => res.json())
+            .then(data => {
+              if (data && typeof data.value === 'number') {
+                setVisitorCount(data.value);
+              }
+            })
+            .catch(() => {
+              setVisitorCount(parseInt(localStorage.getItem('elfhame_visitor_count') || '0', 10));
+            });
         }}
+        sceneData={palaceSceneData}
       />
 
       {/* HELP MODAL */}

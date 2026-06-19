@@ -6,6 +6,8 @@ import towerMp3 from './dark_horror_mystic_ambient.mp3';
 import writingMp3 from './writing.mp3';
 import pageFlipMp3 from './page_flip.mp3';
 import pageShuffleMp3 from './page_shuffle.mp3';
+import rainsOfCastamereMp3 from './Red-Wedding-Ringtone.mp3';
+import sonicanCinematicMp3 from './sonican-cinematic-big-band-music.mp3';
 
 class ElfhameSynthesizer {
   constructor() {
@@ -26,6 +28,11 @@ class ElfhameSynthesizer {
     this.currentScene = 'default';
     this.palaceAudio = null;
     this.palaceGain = null;
+    this.rainsAudio = null;
+    this.rainsGain = null;
+    this.soniconAudio = null;
+    this.soniconGain = null;
+    this.currentPalaceTrack = 'kingdom';
     this.underseaAudio = null;
     this.underseaGain = null;
     this.forestAudio = null;
@@ -199,52 +206,127 @@ class ElfhameSynthesizer {
     }
   }
 
-  playPalaceMusic() {
+  playPalaceMusic(trackName = 'kingdom') {
     if (!this.ctx) return;
     
+    // Pause any active tracks first
+    if (this.palaceAudio) this.palaceAudio.pause();
+    if (this.rainsAudio) this.rainsAudio.pause();
+    if (this.soniconAudio) this.soniconAudio.pause();
+
+    // Lazy load the three tracks and connect to the audio context nodes
     if (!this.palaceAudio) {
       this.palaceAudio = new Audio(palaceMp3);
       this.palaceAudio.loop = true;
-      
       try {
         const source = this.ctx.createMediaElementSource(this.palaceAudio);
         this.palaceGain = this.ctx.createGain();
         this.palaceGain.gain.setValueAtTime(0, this.ctx.currentTime);
         source.connect(this.palaceGain);
         this.palaceGain.connect(this.masterGain);
-      } catch (e) {
-        console.error("Palace audio binding error:", e);
-        this.palaceAudio.volume = 0.5;
-      }
+      } catch (e) { this.palaceAudio.volume = 0.5; }
     }
-    
+
+    if (!this.rainsAudio) {
+      this.rainsAudio = new Audio(rainsOfCastamereMp3);
+      this.rainsAudio.loop = true;
+      try {
+        const source = this.ctx.createMediaElementSource(this.rainsAudio);
+        this.rainsGain = this.ctx.createGain();
+        this.rainsGain.gain.setValueAtTime(0, this.ctx.currentTime);
+        source.connect(this.rainsGain);
+        this.rainsGain.connect(this.masterGain);
+      } catch (e) { this.rainsAudio.volume = 0.5; }
+    }
+
+    if (!this.soniconAudio) {
+      this.soniconAudio = new Audio(sonicanCinematicMp3);
+      this.soniconAudio.loop = true;
+      try {
+        const source = this.ctx.createMediaElementSource(this.soniconAudio);
+        this.soniconGain = this.ctx.createGain();
+        this.soniconGain.gain.setValueAtTime(0, this.ctx.currentTime);
+        source.connect(this.soniconGain);
+        this.soniconGain.connect(this.masterGain);
+      } catch (e) { this.soniconAudio.volume = 0.5; }
+    }
+
+    let activeAudio;
+    let activeGain;
+
+    if (trackName === 'rains') {
+      activeAudio = this.rainsAudio;
+      activeGain = this.rainsGain;
+    } else if (trackName === 'sonicon') {
+      activeAudio = this.soniconAudio;
+      activeGain = this.soniconGain;
+    } else {
+      activeAudio = this.palaceAudio;
+      activeGain = this.palaceGain;
+    }
+
+    this.currentPalaceTrack = trackName;
+
     if (this.isPlaying) {
-      this.palaceAudio.currentTime = 0;
-      this.palaceAudio.play().catch(e => console.error("Palace audio play error:", e));
-      if (this.palaceGain) {
-        this.palaceGain.gain.cancelScheduledValues(this.ctx.currentTime);
-        this.palaceGain.gain.setValueAtTime(0, this.ctx.currentTime);
-        this.palaceGain.gain.linearRampToValueAtTime(0.4, this.ctx.currentTime + 1.5);
+      activeAudio.currentTime = 0;
+      activeAudio.play().catch(e => console.error("Palace play error:", e));
+      if (activeGain) {
+        activeGain.gain.cancelScheduledValues(this.ctx.currentTime);
+        activeGain.gain.setValueAtTime(0, this.ctx.currentTime);
+        activeGain.gain.linearRampToValueAtTime(0.4, this.ctx.currentTime + 1.0);
       }
     }
   }
 
-  stopPalaceMusic() {
-    if (this.palaceAudio) {
-      if (this.palaceGain && this.ctx) {
-        this.palaceGain.gain.cancelScheduledValues(this.ctx.currentTime);
-        this.palaceGain.gain.linearRampToValueAtTime(0.0, this.ctx.currentTime + 1.0);
-        setTimeout(() => {
-          if (this.currentScene !== 'palace') {
-            this.palaceAudio.pause();
-            this.palaceAudio.currentTime = 0;
-          }
-        }, 1000);
-      } else {
-        this.palaceAudio.pause();
-        this.palaceAudio.currentTime = 0;
-      }
+  setPalaceTrack(trackName) {
+    if (this.currentScene !== 'palace') return;
+    
+    // Fade out previous gain
+    let prevGain;
+    if (this.currentPalaceTrack === 'rains') prevGain = this.rainsGain;
+    else if (this.currentPalaceTrack === 'sonicon') prevGain = this.soniconGain;
+    else prevGain = this.palaceGain;
+
+    if (prevGain && this.ctx) {
+      prevGain.gain.cancelScheduledValues(this.ctx.currentTime);
+      prevGain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.3);
     }
+
+    setTimeout(() => {
+      // Pause all
+      if (this.palaceAudio) this.palaceAudio.pause();
+      if (this.rainsAudio) this.rainsAudio.pause();
+      if (this.soniconAudio) this.soniconAudio.pause();
+
+      // Play new
+      this.playPalaceMusic(trackName);
+    }, 350);
+  }
+
+  stopPalaceMusic() {
+    const audios = [
+      { audio: this.palaceAudio, gain: this.palaceGain },
+      { audio: this.rainsAudio, gain: this.rainsGain },
+      { audio: this.soniconAudio, gain: this.soniconGain }
+    ];
+
+    audios.forEach(({ audio, gain }) => {
+      if (audio) {
+        if (gain && this.ctx) {
+          gain.gain.cancelScheduledValues(this.ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.0, this.ctx.currentTime + 1.0);
+          setTimeout(() => {
+            if (this.currentScene !== 'palace') {
+              audio.pause();
+              audio.currentTime = 0;
+            }
+          }, 1000);
+        } else {
+          audio.pause();
+          audio.currentTime = 0;
+        }
+      }
+    });
   }
 
   playUnderseaMusic() {

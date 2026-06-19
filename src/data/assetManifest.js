@@ -12,6 +12,8 @@ import towerMp3 from '../utils/dark_horror_mystic_ambient.mp3';
 import writingMp3 from '../utils/writing.mp3';
 import pageFlipMp3 from '../utils/page_flip.mp3';
 import pageShuffleMp3 from '../utils/page_shuffle.mp3';
+import rainsOfCastamereMp3 from '../utils/Red-Wedding-Ringtone.mp3';
+import sonicanCinematicMp3 from '../utils/sonican-cinematic-big-band-music.mp3';
 
 export const ASSET_MANIFEST = [
   // Fonts
@@ -19,7 +21,7 @@ export const ASSET_MANIFEST = [
 
   // Public Environment Videos
   { url: '/environment/entrytoelfhame.mp4', type: 'video' },
-  { url: '/environment/palace_of_elfhame.mp4', type: 'video' },
+  { url: '/environment/palace_elfhame.mp4', type: 'video' },
   { url: '/environment/undersea_kingdom.mp4', type: 'video' },
   { url: '/environment/crooked_forest.mp4', type: 'video' },
   { url: '/environment/forgotten_tower.mp4', type: 'video' },
@@ -65,7 +67,9 @@ export const ASSET_MANIFEST = [
   { url: towerMp3, type: 'audio' },
   { url: writingMp3, type: 'audio' },
   { url: pageFlipMp3, type: 'audio' },
-  { url: pageShuffleMp3, type: 'audio' }
+  { url: pageShuffleMp3, type: 'audio' },
+  { url: rainsOfCastamereMp3, type: 'audio' },
+  { url: sonicanCinematicMp3, type: 'audio' }
 ];
 
 export default ASSET_MANIFEST;

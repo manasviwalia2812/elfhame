@@ -88,7 +88,20 @@ const welcomeDialogues = [
   }
 ];
 
-export default function CharacterGuide({ currentLocation, isVisible, isWelcomeActive, onCloseWelcome, onVisitorRegistered }) {
+const getReturningDialogues = (name) => [
+  {
+    greeting: `Welcome back, ${name || 'mortal'}.`,
+    text: `You step once again into the courts of Elfhame. The thorns are as sharp as ever, and Cardan still plays his games on the throne. I am Jude Duarte. If you want to survive a second time, keep your wits about you.`,
+    quote: '"If I cannot be better than them, I will become so much worse."'
+  },
+  {
+    greeting: "The Rules of Survival",
+    text: "Never forget the three rules: never eat their fruit, never dance in their circles, and never make a bargain you cannot keep. Safe travels, mortal.",
+    quote: '"Harden your heart. Keep your head."'
+  }
+];
+
+export default function CharacterGuide({ currentLocation, isVisible, isWelcomeActive, onCloseWelcome, onVisitorRegistered, sceneData }) {
   const [dialogue, setDialogue] = useState(dialogueData.landing);
   const [isBlinking, setIsBlinking] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -103,6 +116,29 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
   const [welcomeStep, setWelcomeStep] = useState(0);
   const [userName, setUserName] = useState('');
 
+  // Returning visitor states initialized synchronously to avoid layout flashes
+  const [isReturning, setIsReturning] = useState(() => {
+    const rememberedUntil = localStorage.getItem('elfhame_remembered_until');
+    const now = Date.now();
+    const name = localStorage.getItem('elfhame_visitor_name');
+    return !!(rememberedUntil && parseInt(rememberedUntil, 10) > now && name);
+  });
+  const [savedName, setSavedName] = useState(() => {
+    return localStorage.getItem('elfhame_visitor_name') || 'mortal';
+  });
+
+  // Re-run checks if welcome overlay state changes
+  useEffect(() => {
+    if (isWelcomeActive) {
+      const rememberedUntil = localStorage.getItem('elfhame_remembered_until');
+      const now = Date.now();
+      const name = localStorage.getItem('elfhame_visitor_name');
+      const returning = !!(rememberedUntil && parseInt(rememberedUntil, 10) > now && name);
+      setIsReturning(returning);
+      if (name) setSavedName(name);
+    }
+  }, [isWelcomeActive]);
+
   // Reset welcome step when active state changes
   useEffect(() => {
     if (isWelcomeActive) {
@@ -113,7 +149,15 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
 
   useEffect(() => {
     if (isWelcomeActive) {
-      setDialogue(welcomeDialogues[welcomeStep]);
+      if (isReturning) {
+        const dialogues = getReturningDialogues(savedName);
+        setDialogue(dialogues[welcomeStep] || dialogues[0]);
+      } else {
+        setDialogue(welcomeDialogues[welcomeStep]);
+      }
+    } else if (currentLocation === 'palace' && sceneData && sceneData.dialogue) {
+      setDialogue(sceneData.dialogue);
+      audioSynth.playMarkerHover();
     } else {
       const key = currentLocation || 'map';
       if (dialogueData[key]) {
@@ -121,7 +165,7 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
         if (currentLocation) audioSynth.playMarkerHover();
       }
     }
-  }, [currentLocation, isWelcomeActive, welcomeStep]);
+  }, [currentLocation, isWelcomeActive, welcomeStep, sceneData, isReturning, savedName]);
 
   useEffect(() => {
     const textVal = dialogue.text || '';
@@ -181,16 +225,34 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
 
   const handleNameSubmit = () => {
     audioSynth.playMarkerClick();
-    const finalCount = parseInt(localStorage.getItem('elfhame_visitor_count') || '0', 10) + 1;
-    localStorage.setItem('elfhame_visitor_count', finalCount.toString());
     
+    // Save name locally
+    localStorage.setItem('elfhame_visitor_name', userName || 'Mortal');
+
     // Remember for 3.5 days
     const expirationTime = Date.now() + 3.5 * 24 * 60 * 60 * 1000;
     localStorage.setItem('elfhame_remembered_until', expirationTime.toString());
-    
-    if (onVisitorRegistered) {
-      onVisitorRegistered();
-    }
+
+    // Increment global count via hit endpoint
+    fetch('https://api.counterapi.dev/v1/projects/elfhame-atlas/counters/visitors/hit')
+      .then(res => res.json())
+      .then(data => {
+        if (data && typeof data.value === 'number') {
+          localStorage.setItem('elfhame_visitor_count', data.value.toString());
+          if (onVisitorRegistered) {
+            onVisitorRegistered();
+          }
+        }
+      })
+      .catch(err => {
+        console.warn("Failed to increment global counter, falling back to local:", err);
+        const localCount = parseInt(localStorage.getItem('elfhame_visitor_count') || '128', 10) + 1;
+        localStorage.setItem('elfhame_visitor_count', localCount.toString());
+        if (onVisitorRegistered) {
+          onVisitorRegistered();
+        }
+      });
+
     setWelcomeStep(3);
   };
 
@@ -205,17 +267,27 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
         setDisplayedQuote(dialogue.quote || '');
         audioSynth.stopTypewriterLoop();
       } else {
-        if (welcomeStep === 0) {
-          audioSynth.playMarkerClick();
-          setWelcomeStep(1);
-        } else if (welcomeStep === 1) {
-          audioSynth.playMarkerClick();
-          setWelcomeStep(2);
-        } else if (welcomeStep === 2) {
-          // Name input step, clicking does nothing
-        } else if (welcomeStep === 3) {
-          audioSynth.playMarkerClick();
-          onCloseWelcome();
+        if (isReturning) {
+          if (welcomeStep === 0) {
+            audioSynth.playMarkerClick();
+            setWelcomeStep(1);
+          } else if (welcomeStep === 1) {
+            audioSynth.playMarkerClick();
+            onCloseWelcome();
+          }
+        } else {
+          if (welcomeStep === 0) {
+            audioSynth.playMarkerClick();
+            setWelcomeStep(1);
+          } else if (welcomeStep === 1) {
+            audioSynth.playMarkerClick();
+            setWelcomeStep(2);
+          } else if (welcomeStep === 2) {
+            // Name input step, clicking does nothing
+          } else if (welcomeStep === 3) {
+            audioSynth.playMarkerClick();
+            onCloseWelcome();
+          }
         }
       }
     };
@@ -228,7 +300,7 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
       clearTimeout(timer);
       window.removeEventListener('click', handleGlobalClick);
     };
-  }, [isWelcomeActive, typingComplete, dialogue, onCloseWelcome, welcomeStep]);
+  }, [isWelcomeActive, typingComplete, dialogue, onCloseWelcome, welcomeStep, isReturning]);
 
   useEffect(() => {
     const blinkInterval = setInterval(() => {
@@ -420,7 +492,10 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
                 animate={{ opacity: [0.3, 1, 0.3] }}
                 transition={{ repeat: Infinity, duration: 2 }}
               >
-                {welcomeStep === 3 ? "Enter the Realm ›" : "Click anywhere to continue ›"}
+                {isReturning
+                  ? (welcomeStep === 1 ? "Enter the Realm ›" : "Click anywhere to continue ›")
+                  : (welcomeStep === 3 ? "Enter the Realm ›" : "Click anywhere to continue ›")
+                }
               </motion.div>
             )}
           </motion.div>

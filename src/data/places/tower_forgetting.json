@@ -6,14 +6,16 @@
   "y": 1.2,
   "z": 0.0,
   "quote": "\"We have spoken of the dead. Now let us speak of the living.\"",
-  "description": "A grim prison built on an isolated spire. Those who defy the crown are locked away here to be slowly forgotten.",
-  "history": "Standing on a solitary basalt needle in the turbulent sea, the Tower of Forgetting is the primary prison of Elfhame. The waves crash constantly against its base, and the prison cells are damp, dark, and designed to drive captives insane.",
+  "description": "A grim basalt prison needle rising from the waves, designed to lock away the crown's enemies. Here, high-profile prisoners are stripped of their names, sanity, and freedom.",
+  "history": "Standing on a solitary basalt needle in the turbulent sea, the Tower of Forgetting is the primary prison of Elfhame. It houses dangerous royalty, traitors, and political captives. The damp, dark cells and magical glamour are designed to slowly drain the memories and sanity of those who enter, making them disappear from the mind of the court.",
   "events": [
-    "The imprisonment and torture of Cardan's brother, Prince Balekin.",
-    "The imprisonment of Jude Duarte by the Undersea's request."
+    "The imprisonment and torture of Cardan's traitorous brother, Prince Balekin.",
+    "The confinement of Lady Asha, Cardan's mother, for her court conspiracies.",
+    "The kidnapping of Jude Duarte, locked in the depths following the Ghost's ultimate betrayal."
   ],
   "secrets": [
-    "A secret key is hidden under the loose slate of the third pier.",
-    "Glamour rings are used to keep guards awake."
+    "The Ghost's betrayal led directly to Jude Duarte's kidnapping from the palace halls.",
+    "Guards use specialized glamour rings to resist the memory-draining influence of the stones.",
+    "A hidden crawlspace behind the third pier holds a key that unlocks Balekin's cell."
   ]
 }
