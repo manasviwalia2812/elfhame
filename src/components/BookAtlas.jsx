@@ -903,7 +903,7 @@ export default function BookAtlas({ setGlobalLocation }) {
                     textAlign: 'center',
                     marginBottom: '20px',
                   }}>
-                    Please contact me for any additions, changes, credits/licensing issues, or mistakes in the chronicles.
+                    I do not take credit for any videos, audios, photos used. <br></br> If you are an artist and you see your work here, please contact me.<br></br> For any additions, changes, credits/licensing issues, or mistakes in the chronicles, reach the scribe below.
                   </p>
 
                   <div style={{
@@ -922,7 +922,7 @@ export default function BookAtlas({ setGlobalLocation }) {
                       🌐 Portfolio
                     </a>
                     <a 
-                      href="https://www.linkedin.com/in/manasvi-walia-581b0a2b0/" 
+                      href="https://www.linkedin.com/in/manasvi-walia-9516442a8/" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="contact-social-link"
