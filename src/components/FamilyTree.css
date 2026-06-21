@@ -1,0 +1,208 @@
+/* Scoped styles for the Family Tree Lineage Page/View inside the Modal */
+
+.family-tree-modal-container {
+  max-width: 900px;
+  width: 90vw;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: linear-gradient(135deg, #c9a84c, #9c7a32 40%, #7a5a26 100%);
+  padding: 8px;
+  border-radius: 6px;
+  box-shadow: 0 40px 80px -20px rgba(0,0,0,0.85);
+  position: relative;
+  z-index: 105;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.family-tree-inner {
+  background: radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,0.22), transparent 60%),
+              #f4ead0;
+  border: 2px solid #9c7a32;
+  border-radius: 4px;
+  padding: 40px 24px 50px;
+  position: relative;
+  overflow: hidden;
+  color: #2a1f12;
+  font-family: 'Iowan Old Style','Palatino Linotype',Georgia,serif;
+}
+
+.family-tree-inner::before {
+  content: "";
+  position: absolute; 
+  inset: 12px;
+  border: 1px solid #9c7a32;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* Corner ornaments */
+.family-tree-corner { 
+  position: absolute; 
+  width: 38px; 
+  height: 38px; 
+  pointer-events: none; 
+}
+.family-tree-corner svg { 
+  width: 100%; 
+  height: 100%; 
+}
+.family-tree-corner.tl { top: 8px; left: 8px; }
+.family-tree-corner.tr { top: 8px; right: 8px; transform: scaleX(-1); }
+.family-tree-corner.bl { bottom: 8px; left: 8px; transform: scaleY(-1); }
+.family-tree-corner.br { bottom: 8px; right: 8px; transform: scale(-1,-1); }
+
+.family-tree-title-block { 
+  text-align: center; 
+  margin-bottom: 6px; 
+  position: relative; 
+  z-index: 2; 
+}
+
+.family-tree-title-block .crest { 
+  width: 34px; 
+  height: 34px; 
+  margin: 0 auto 10px; 
+  opacity: 0.85; 
+}
+
+.family-tree-title-block h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 17px; 
+  letter-spacing: 0.28em; 
+  text-transform: uppercase;
+  margin: 0; 
+  color: #5c1f1f;
+  text-shadow: none;
+}
+
+.family-tree-title-block .sub {
+  font-size: 11px; 
+  letter-spacing: 0.18em; 
+  text-transform: uppercase;
+  color: #9c7a32; 
+  margin-top: 4px;
+}
+
+.family-tree-rule { 
+  width: 160px; 
+  height: 1px; 
+  margin: 14px auto 20px;
+  background: linear-gradient(90deg, transparent, #9c7a32, transparent); 
+}
+
+.family-tree-wrap { 
+  position: relative; 
+  width: 100%; 
+}
+
+svg.family-tree-svg { 
+  display: block; 
+  width: 100%; 
+  height: auto; 
+}
+
+.family-tree-branch {
+  fill: none; 
+  stroke: #7a5a26; 
+  stroke-width: 1.8; 
+  stroke-linecap: round;
+  stroke-dasharray: 6 4; 
+  stroke-dashoffset: 20;
+}
+
+.family-tree-inner.in-view .family-tree-branch {
+  transition: stroke-dashoffset 1200ms cubic-bezier(.4,0,.2,1) var(--d, 0ms);
+  stroke-dashoffset: 0;
+}
+
+.family-tree-node {
+  position: absolute; 
+  transform: translate(-50%, -50%) scale(0.85);
+  opacity: 0; 
+  text-align: center; 
+  width: max-content; 
+  max-width: 170px;
+}
+
+.family-tree-inner.in-view .family-tree-node {
+  transition: opacity 800ms ease var(--d, 0ms), 
+              transform 800ms cubic-bezier(.2,.8,.3,1.1) var(--d, 0ms);
+  opacity: 1; 
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.family-tree-node .name {
+  font-family: 'Cinzel', serif;
+  font-size: 11px; 
+  letter-spacing: 0.04em; 
+  color: #5c1f1f; 
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.family-tree-node.crown .name { 
+  font-size: 13.5px; 
+  letter-spacing: 0.08em; 
+  color: #7b1616;
+}
+
+.family-tree-node .role {
+  font-size: 9px; 
+  letter-spacing: 0.02em; 
+  color: #6b5836;
+  font-style: italic; 
+  margin-top: 2px; 
+  white-space: nowrap;
+}
+
+.family-tree-node.minor .name { 
+  font-size: 10.5px; 
+  color: #473a22; 
+}
+
+.family-tree-node.minor .role { 
+  font-size: 8.5px; 
+}
+
+.family-tree-node-box {
+  display: inline-block; 
+  padding: 5px 10px;
+  border: 1px solid #9c7a32; 
+  background: rgba(255, 255, 255, 0.7); 
+  border-radius: 2px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.family-tree-node.crown .family-tree-node-box { 
+  border-width: 1.5px; 
+  box-shadow: 0 0 0 1px #c9a84c inset, 0 3px 8px rgba(122,90,38,0.15); 
+}
+
+.family-tree-back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: #5c1f1f;
+  border: 1px solid #9c7a32;
+  color: #f4ead0;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  padding: 5px 12px;
+  cursor: pointer;
+  z-index: 10;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.family-tree-back-btn:hover {
+  background: #f4ead0;
+  color: #5c1f1f;
+  border-color: #5c1f1f;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+}

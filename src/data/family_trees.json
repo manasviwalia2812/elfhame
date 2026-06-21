@@ -1,0 +1,55 @@
+{
+  "greenbriar": {
+    "title": "The Greenbriar Royal Family",
+    "subtitle": "The Ruling Bloodline of Elfhame",
+    "people": [
+      { "id": "mab", "name": "Queen Mab Greenbriar", "role": "First High Queen of Elfhame", "crown": true },
+      { "id": "clovis", "name": "Clovis Greenbriar", "role": "Mab's Daughter", "parents": ["mab"] },
+      { "id": "eldred", "name": "Eldred Greenbriar", "role": "High King", "crown": true, "parents": ["clovis"] },
+      { "id": "elowyn", "name": "Princess Elowyn", "role": "Princess · Crown Heir", "parents": ["eldred"] },
+      { "id": "rhyia", "name": "Princess Rhyia", "role": "Princess", "parents": ["eldred"] },
+      { "id": "caelia", "name": "Princess Caelia", "role": "Princess", "parents": ["eldred"] },
+      { "id": "dain", "name": "Prince Dain", "role": "Prince", "parents": ["eldred"] },
+      { "id": "balekin", "name": "Prince Balekin", "role": "Prince", "parents": ["eldred"] },
+      { "id": "cardan", "name": "High King Cardan", "role": "High King", "crown": true, "parents": ["eldred"] },
+      { "id": "oak", "name": "Oak Greenbriar", "role": "Prince · Heir", "parents": ["cardan"] }
+    ]
+  },
+  "duarte_madoc": {
+    "title": "The Duarte-Madoc Family",
+    "subtitle": "The Family at the Center of the Story",
+    "people": [
+      { "id": "madoc", "name": "General Madoc", "role": "Grand General of Elfhame", "crown": false },
+      { "id": "eva", "name": "Eva Duarte", "role": "Madoc's First Wife (Mortal)", "parents": [] },
+      { "id": "oriana", "name": "Oriana", "role": "Madoc's Second Wife", "parents": [] },
+      { "id": "jude", "name": "Jude Duarte", "role": "High Queen of Elfhame", "crown": true, "parents": ["madoc", "eva"] },
+      { "id": "taryn", "name": "Taryn Duarte", "role": "Mortal Twin Sister", "parents": ["madoc", "eva"] },
+      { "id": "vivienne", "name": "Vivienne Duarte", "role": "Half-Fae Sister", "parents": ["madoc", "eva"] },
+      { "id": "oak", "name": "Oak Greenbriar", "role": "Adopted Son", "crown": true, "parents": ["oriana"] }
+    ]
+  },
+  "undersea": {
+    "title": "The Undersea Royal Family",
+    "subtitle": "Rulers of the Undersea Court",
+    "people": [
+      { "id": "orlagh", "name": "Queen Orlagh", "role": "Queen of the Undersea", "crown": true },
+      { "id": "nicasia", "name": "Princess Nicasia", "role": "Princess of the Undersea", "parents": ["orlagh"] }
+    ]
+  },
+  "termites": {
+    "title": "The Court of Termites",
+    "subtitle": "An Independent Faerie Court",
+    "people": [
+      { "id": "roiben", "name": "Lord Roiben", "role": "Lord of the Court of Termites", "crown": true },
+      { "id": "kaye", "name": "Kaye Fierch", "role": "Pixie Consort & Companion", "parents": [] }
+    ]
+  },
+  "teeth": {
+    "title": "The Court of Teeth",
+    "subtitle": "A Darker, Savage Northern Court",
+    "people": [
+      { "id": "nore", "name": "Lady Nore", "role": "Lady of the Court of Teeth", "crown": true },
+      { "id": "suren", "name": "Princess Suren (Wren)", "role": "Princess of the Court of Teeth", "crown": true, "parents": ["nore"] }
+    ]
+  }
+}

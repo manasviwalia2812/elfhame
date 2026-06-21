@@ -143,6 +143,17 @@
     "summary": "Proud, cruel, and vindictive, Nicassia represents the political ambition of the Undersea. She harbors a deep hatred for mortals, especially Jude."
   },
   {
+    "id": "orlagh",
+    "name": "Orlagh",
+    "titles": ["Queen of the Undersea"],
+    "age": "Ancient",
+    "species": "Sea Folk (Faerie)",
+    "residence": "The Undersea",
+    "image": "/characters/orlagh/orlagh.png",
+    "background": "Orlagh is the formidable Queen of the Undersea and one of the most powerful rulers in Faerie. Ambitious and politically ruthless, she seeks to extend the influence of the Undersea over Elfhame through diplomacy, manipulation, and strategic alliances. As the mother of Nicasia, she carefully cultivates relationships that might one day place her family closer to the High King's throne.",
+    "summary": "Orlagh is a patient and calculating monarch whose greatest weapon is her political cunning. Unlike warriors who seek power through battle, she prefers schemes, negotiations, and long-term strategy. Beneath her regal composure lies an unyielding determination to secure dominance for the Undersea, making her one of the most dangerous players in the politics of Elfhame."
+  },
+  {
     "id": "oak",
     "name": "Prince Oak",
     "titles": ["Crown Prince of Elfhame"],
@@ -196,5 +207,27 @@
     "image": "/characters/grimson/grimson.png",
     "background": "A legendary, opportunistic faerie blacksmith who was exiled from the High Court. He forged the blood-crown of Elfhame and is known for creating items carrying powerful, cursed consequences.",
     "summary": "A master blacksmith whose items hold double-edged magic. Grimsen serves whoever offers him power, though his loyalty is as fickle as his craft."
+  },
+  {
+    "id": "mother_marrow",
+    "name": "Mother Marrow",
+    "titles": ["Keeper of the Tower of Forgetting", "Warden of Lost Memories"],
+    "age": "Ancient",
+    "species": "Hag",
+    "residence": "The Tower of Forgetting",
+    "image": "/characters/mother-marrow/mother-marrow.png",
+    "background": "Mother Marrow is the terrifying hag who presides over the Tower of Forgetting, a dreaded prison where memories can be stolen, altered, or erased entirely. Feared throughout Elfhame, she serves as both jailer and tormentor, wielding magic that allows her to strip prisoners of their identities and leave them hollow shells of their former selves. Her tower stands as a symbol of fear, ensuring obedience through the threat of oblivion.",
+    "summary": "Mother Marrow is a cruel and enigmatic figure who values power over compassion. Patient and relentless, she delights in unraveling the minds of her captives, viewing memories as treasures to be collected and manipulated. Her mastery over forgetting makes her one of the most feared beings in Faerie, for death is often considered kinder than falling into her hands."
+  },
+  {
+    "id": "grima_mog",
+    "name": "Grima Mog",
+    "titles": ["Exile", "Commander"],
+    "age": "Ancient",
+    "species": "Hag",
+    "residence": "The Court of Teeth",
+    "image": "/characters/grima-mog/grima-mog.png",
+    "background": "Grima Mog is a fearsome hag warrior and one of the most respected figures of the Court of Teeth. Unlike many courtiers who rely on intrigue and deception, she commands loyalty through strength, discipline, and an unwavering sense of honor. Though her appearance is terrifying, Grima Mog is known for keeping her word and respecting courage wherever she finds it. Her influence extends far beyond her court, making her a formidable force in the politics and conflicts of Elfhame.",
+    "summary": "Grima Mog is a hardened commander whose reputation is built on strength, loyalty, and honor. Fierce in battle and blunt in speech, she values courage above status and judges others by their actions rather than their titles. While many fear her monstrous appearance, those who earn her respect discover a rare ally whose loyalty is as steadfast as her ferocity."
   }
 ]

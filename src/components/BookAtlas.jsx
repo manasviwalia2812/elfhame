@@ -8,6 +8,7 @@ import goldFeather from '../assets/gold_feather.png';
 import inkPot from '../assets/ink_pot.png';
 import frontCover from '../assets/bookcover/frontcover.png';
 import backCover from '../assets/bookcover/backcover.png';
+import FamilyCards from './FamilyCards';
 
 const NUM_PAGES = 6; // Chapters I to VI
 
@@ -26,6 +27,7 @@ export default function BookAtlas({ setGlobalLocation }) {
 
   // Contact section states
   const [showContactModal, setShowContactModal] = useState(false);
+  const [showFamilyModal, setShowFamilyModal] = useState(false);
   const formRef = useRef();
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -518,7 +520,7 @@ export default function BookAtlas({ setGlobalLocation }) {
                     <div className="landing-divider" style={{ margin: '15px auto' }} />
                     <h4 style={{ color: 'var(--gold-dark)', margin: '10px 0' }}>Families and Heirarchy</h4>
                     <QuillWriter
-                      text={`"Most of all, I hate him because I think of him, often. It's like a disease." The Royal Palace stands as the crowning jewel of Elfhame. Inside, noble families plot for power, trading silver promises and deadly nightshade. Beneath the gilded columns, Cardan Duarte sits on the throne of thorns, mocking the mortals who dare tread his halls.`}
+                      text={`The Royal Palace stands as the crowning jewel of Elfhame. Inside, noble families plot for power, trading silver promises and deadly nightshade. Beneath the gilded columns, Cardan Duarte sits on the throne of thorns, mocking the mortals who dare tread his halls.`}
                       active={ps.turned === false && currentPage === i} // trigger when this page becomes visible
                       feathterSrc={goldFeather}
                       inkpotSrc={inkPot}
@@ -637,10 +639,13 @@ export default function BookAtlas({ setGlobalLocation }) {
                     <button 
                       className="btn-fantasy glow-gold" 
                       style={{ marginTop: '10px' }}
-                      onClick={navigateToPalace}
+                      onClick={() => {
+                        audioSynth.playMarkerClick();
+                        setShowFamilyModal(true);
+                      }}
                       disabled={isIntroAnimating}
                     >
-                      🏰 ENTER PALACE SCENE
+                      👑 KNOW MORE ABOUT FAMILIES
                     </button>
                   </div>
                 )}
@@ -1034,6 +1039,33 @@ export default function BookAtlas({ setGlobalLocation }) {
                     </button>
                   </form>
                 </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {showFamilyModal && (
+              <motion.div 
+                className="family-modal-overlay"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                style={{
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  width: '100vw',
+                  height: '100vh',
+                  backgroundColor: 'rgba(0, 0, 0, 0.88)',
+                  zIndex: 9999,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '20px',
+                  pointerEvents: 'auto',
+                }}
+              >
+                <FamilyCards onClose={() => setShowFamilyModal(false)} />
               </motion.div>
             )}
           </AnimatePresence>

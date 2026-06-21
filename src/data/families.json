@@ -1,0 +1,42 @@
+[
+  {
+    "id": "greenbriar",
+    "color": "#e8b34a",
+    "glow": "radial-gradient(circle, rgba(232, 179, 74, 0.4) 0%, transparent 70%)",
+    "title": "Greenbriar Dynasty",
+    "role": "High Royalty",
+    "desc": "The ancient royal bloodline of Elfhame, ruling from the Throne of Thorns. They govern the High Court with absolute majesty, pride, and a dangerous hunger for power."
+  },
+  {
+    "id": "duarte_madoc",
+    "color": "#c9402c",
+    "glow": "radial-gradient(circle, rgba(201, 64, 44, 0.4) 0%, transparent 70%)",
+    "title": "Duarte & Madoc Household",
+    "role": "War & Cunning",
+    "desc": "The home of General Madoc and the mortal twins Jude and Taryn. Representing raw redcap military force combined with mortal espionage, they sit at the heart of the realm's conspiracies."
+  },
+  {
+    "id": "undersea",
+    "color": "#3e7bd6",
+    "glow": "radial-gradient(circle, rgba(62, 123, 214, 0.4) 0%, transparent 70%)",
+    "title": "Undersea Royal Family",
+    "role": "Abyssal Kingdom",
+    "desc": "Queen Orlagh and Princess Nicasia rule the depths. Proud, ancient, and vast, they command the oceans surrounding Elfhame, using the tides and deep-sea leviathans to threaten the land."
+  },
+  {
+    "id": "termites",
+    "color": "#888899",
+    "glow": "radial-gradient(circle, rgba(136, 136, 153, 0.4) 0%, transparent 70%)",
+    "title": "Court of Termites",
+    "role": "Shadow Outcasts",
+    "desc": "Led by the pixie Lord Roiben and Kaye Fierch. A rogue court of wild pixie magic and shadow-dwellers. They remain loyal to the High Crown but fiercely autonomous."
+  },
+  {
+    "id": "teeth",
+    "color": "#5a9450",
+    "glow": "radial-gradient(circle, rgba(90, 148, 80, 0.4) 0%, transparent 70%)",
+    "title": "Court of Teeth",
+    "role": "Feral North",
+    "desc": "The frozen northern court led by Lady Nore and Princess Suren. Infamous for flesh-crafted relic magic, animal skins, and jagged teeth charms, they represent the ancient, cruel ways of Faerie."
+  }
+]
