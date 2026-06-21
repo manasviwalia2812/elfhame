@@ -1350,3 +1350,130 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 1px 0 #800e13;
 }
 
+@media (max-width: 768px) {
+  /* Lift the atlas opening button above the guide panel on mobile */
+  .btn-open-atlas {
+    bottom: auto !important;
+    top: 25vh !important;
+    z-index: 100 !important;
+  }
+
+  /* Book wrapper resizing on mobile screen */
+  .book-wrapper {
+    width: 95vw !important;
+    height: 120vw !important;
+    max-width: 100% !important;
+    max-height: 480px !important;
+  }
+  .book-wrapper.closed {
+    width: 60vw !important;
+    height: 120vw !important;
+    max-width: 100% !important;
+    max-height: 480px !important;
+  }
+
+  /* Reduce margins and paddings inside the book pages */
+  .book-page-front,
+  .book-page-back,
+  .book-cover-right-back,
+  .book-cover-right-under-inside {
+    padding: 14px 14px 44px 14px !important; /* leaves room for nav buttons at the bottom */
+  }
+
+  /* Support vertical scrolling on front/back book pages in small viewports to prevent overflow cut-offs */
+  .book-page-front,
+  .book-page-back,
+  .book-cover-right-back,
+  .book-cover-right-under-inside {
+    overflow-y: auto !important;
+  }
+
+  /* Tighten double page border and scale down corner ornaments on mobile */
+  .vintage-page-border {
+    top: 6px !important;
+    left: 6px !important;
+    right: 6px !important;
+    bottom: 6px !important;
+    border-width: 1px !important;
+  }
+  .vintage-page-border::after {
+    top: 2px !important;
+    left: 2px !important;
+    right: 2px !important;
+    bottom: 2px !important;
+  }
+  .vintage-corner {
+    width: 16px !important;
+    height: 16px !important;
+  }
+  .vintage-corner.top-left { top: -1px !important; left: -1px !important; }
+  .vintage-corner.top-right { top: -1px !important; right: -1px !important; }
+  .vintage-corner.bottom-left { bottom: -1px !important; left: -1px !important; }
+  .vintage-corner.bottom-right { bottom: -1px !important; right: -1px !important; }
+
+  /* Scale down book typography */
+  .book-wrapper h2.chapter-headline {
+    font-size: 1.15rem !important;
+    margin-top: 2px !important;
+    margin-bottom: 4px !important;
+  }
+  .book-wrapper h3 {
+    font-size: 1.05rem !important;
+    margin-bottom: 4px !important;
+  }
+  .book-wrapper h4 {
+    font-size: 0.72rem !important;
+    margin-top: 4px !important;
+    margin-bottom: 4px !important;
+  }
+  .book-wrapper .chapter-label {
+    font-size: 0.65rem !important;
+    margin-bottom: 2px !important;
+  }
+  .book-wrapper p,
+  .book-wrapper .chapter-summary,
+  .book-wrapper .chapter-desc {
+    font-size: 0.7rem !important;
+    line-height: 1.35 !important;
+    margin-bottom: 6px !important;
+  }
+  .book-wrapper ul {
+    padding: 10px 15px !important;
+  }
+  .book-wrapper ul li {
+    font-size: 0.7rem !important;
+    line-height: 1.5 !important;
+    margin-bottom: 2px !important;
+  }
+
+  /* Quill typewriter text scale down */
+  .quill-writer-text {
+    font-size: 0.72rem !important;
+    line-height: 1.35 !important;
+  }
+
+  /* Book action buttons overrides to fit inside narrow pages */
+  .book-wrapper .btn-fantasy {
+    margin-right: 0 !important;
+    margin-top: 8px !important;
+    align-self: center !important;
+    width: max-content !important;
+    padding: 6px 14px !important;
+    font-size: 0.7rem !important;
+  }
+
+  /* Navigation buttons positioning inside pages */
+  .book-nav-btn {
+    bottom: 12px !important;
+    right: 12px !important;
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 1.4rem !important;
+    padding-bottom: 3px !important;
+  }
+  .book-nav-btn.prev-btn {
+    left: 12px !important;
+    right: auto !important;
+  }
+}
+

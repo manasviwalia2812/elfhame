@@ -104,7 +104,7 @@ const getReturningDialogues = (name) => [
 export default function CharacterGuide({ currentLocation, isVisible, isWelcomeActive, onCloseWelcome, onVisitorRegistered, sceneData }) {
   const [dialogue, setDialogue] = useState(dialogueData.landing);
   const [isBlinking, setIsBlinking] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(() => window.innerWidth < 768);
   const turbulenceRef = useRef(null);
 
   // Typewriter states
@@ -167,12 +167,13 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
     }
   }, [currentLocation, isWelcomeActive, welcomeStep, sceneData, isReturning, savedName]);
 
+  // Handle Typewriter rendering (bypass on mobile)
   useEffect(() => {
     const textVal = dialogue.text || '';
     const quoteVal = dialogue.quote || '';
 
-    // If welcome is not active, display instantly and bypass typewriter
-    if (!isWelcomeActive) {
+    // If welcome is not active OR if we are on a mobile viewport, display instantly
+    if (!isWelcomeActive || window.innerWidth < 768) {
       setDisplayedText(textVal);
       setDisplayedQuote(quoteVal);
       setTypingComplete(true);
@@ -256,39 +257,48 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
     setWelcomeStep(3);
   };
 
+  const handleAdvanceWelcome = () => {
+    if (isReturning) {
+      if (welcomeStep === 0) {
+        audioSynth.playMarkerClick();
+        setWelcomeStep(1);
+      } else if (welcomeStep === 1) {
+        audioSynth.playMarkerClick();
+        onCloseWelcome();
+      }
+    } else {
+      if (welcomeStep === 0) {
+        audioSynth.playMarkerClick();
+        setWelcomeStep(1);
+      } else if (welcomeStep === 1) {
+        audioSynth.playMarkerClick();
+        setWelcomeStep(2);
+      } else if (welcomeStep === 2) {
+        // Welcoming name submit takes over
+      } else if (welcomeStep === 3) {
+        audioSynth.playMarkerClick();
+        onCloseWelcome();
+      }
+    }
+  };
+
   // Global click listener for skipping typewriter or advancing in welcome screen
   useEffect(() => {
     if (!isWelcomeActive) return;
 
-    const handleGlobalClick = () => {
+    const handleGlobalClick = (e) => {
+      // Don't intercept clicks inside specific interactive buttons or form fields
+      if (e.target.closest('.Proceed-btn') || e.target.closest('.name-input-container')) {
+        return;
+      }
+
       if (!typingComplete) {
         setTypingComplete(true);
         setDisplayedText(dialogue.text || '');
         setDisplayedQuote(dialogue.quote || '');
         audioSynth.stopTypewriterLoop();
       } else {
-        if (isReturning) {
-          if (welcomeStep === 0) {
-            audioSynth.playMarkerClick();
-            setWelcomeStep(1);
-          } else if (welcomeStep === 1) {
-            audioSynth.playMarkerClick();
-            onCloseWelcome();
-          }
-        } else {
-          if (welcomeStep === 0) {
-            audioSynth.playMarkerClick();
-            setWelcomeStep(1);
-          } else if (welcomeStep === 1) {
-            audioSynth.playMarkerClick();
-            setWelcomeStep(2);
-          } else if (welcomeStep === 2) {
-            // Name input step, clicking does nothing
-          } else if (welcomeStep === 3) {
-            audioSynth.playMarkerClick();
-            onCloseWelcome();
-          }
-        }
+        handleAdvanceWelcome();
       }
     };
 
@@ -300,7 +310,7 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
       clearTimeout(timer);
       window.removeEventListener('click', handleGlobalClick);
     };
-  }, [isWelcomeActive, typingComplete, dialogue, onCloseWelcome, welcomeStep, isReturning]);
+  }, [isWelcomeActive, typingComplete, dialogue, welcomeStep, isReturning]);
 
   useEffect(() => {
     const blinkInterval = setInterval(() => {
@@ -477,6 +487,7 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
                 </button>
               </div>
             )}
+            
             {displayedQuote && (
               <div className="dialogue-quote">
                 <span>{displayedQuote}</span>
@@ -485,18 +496,28 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
                 )}
               </div>
             )}
+
             {typingComplete && isWelcomeActive && welcomeStep !== 2 && (
-              <motion.div 
-                className="click-to-proceed"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0.3, 1, 0.3] }}
-                transition={{ repeat: Infinity, duration: 2 }}
-              >
-                {isReturning
-                  ? (welcomeStep === 1 ? "Enter the Realm ›" : "Click anywhere to continue ›")
-                  : (welcomeStep === 3 ? "Enter the Realm ›" : "Click anywhere to continue ›")
-                }
-              </motion.div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+                <button
+                  className="btn-fantasy Proceed-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAdvanceWelcome();
+                  }}
+                  style={{
+                    marginTop: '15px',
+                    padding: '6px 16px',
+                    fontSize: '0.8rem',
+                    pointerEvents: 'auto',
+                  }}
+                >
+                  {isReturning
+                    ? (welcomeStep === 1 ? "Enter Realm" : "Proceed ›")
+                    : (welcomeStep === 3 ? "Enter Realm" : "Proceed ›")
+                  }
+                </button>
+              </div>
             )}
           </motion.div>
         </AnimatePresence>
@@ -561,17 +582,6 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
           line-height: 1;
         }
 
-        .click-to-proceed {
-          font-size: 0.85rem;
-          color: var(--gold-primary);
-          text-align: right;
-          margin-top: 15px;
-          font-family: var(--font-display);
-          letter-spacing: 0.05em;
-          opacity: 0.8;
-          text-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
-        }
-
         @keyframes blink {
           50% { opacity: 0; }
         }
@@ -581,14 +591,14 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
             flex-direction: column !important;
             bottom: auto !important;
             left: 5% !important;
-            top: 15vh !important;
+            top: 10vh !important;
             width: 90% !important;
             gap: 15px !important;
             max-width: 100% !important;
           }
           .character-guide-root.welcome-centered .jude-wrapper {
-            width: 110px !important;
-            height: 150px !important;
+            width: 100px !important;
+            height: 135px !important;
           }
           .character-guide-root.welcome-centered .dialogue-box {
             --dialogue-box-width: 500px;
@@ -670,7 +680,7 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
           padding-bottom: 4px;
         }
 
-         .dialogue-text {
+        .dialogue-text {
           font-family: var(--font-body);
           font-size: 0.9rem;
           line-height: 1.4;
@@ -721,7 +731,7 @@ export default function CharacterGuide({ currentLocation, isVisible, isWelcomeAc
             font-size: 0.8rem;
           }
         }
-          .jude-toggle-tab {
+        .jude-toggle-tab {
           position: absolute;
           right: -10px;
           top: 50%;

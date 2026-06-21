@@ -12,7 +12,7 @@
       { "id": "dain", "name": "Prince Dain", "role": "Prince", "parents": ["eldred"] },
       { "id": "balekin", "name": "Prince Balekin", "role": "Prince", "parents": ["eldred"] },
       { "id": "cardan", "name": "High King Cardan", "role": "High King", "crown": true, "parents": ["eldred"] },
-      { "id": "oak", "name": "Oak Greenbriar", "role": "Prince · Heir", "parents": ["cardan"] }
+      { "id": "oak", "name": "Oak Greenbriar", "role": "Prince · Heir", "parents": ["dain"] }
     ]
   },
   "duarte_madoc": {

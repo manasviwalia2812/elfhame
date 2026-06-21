@@ -323,28 +323,31 @@ export default function BookAtlas({ setGlobalLocation }) {
           transition: "opacity 0.6s ease-in-out",
         }}>
           {/* Inside Face (parchment) */}
-          <div style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundImage: "url('/environment/vintage_parchment_page.png')",
-            backgroundColor: "#fff2df",
-            backgroundSize: "cover",
-            borderTopRightRadius: "0.6rem",
-            borderBottomRightRadius: "0.6rem",
-            backfaceVisibility: "hidden",
-            transform: "rotateY(0deg)",
-            boxShadow: "inset 0 0 50px rgba(0,0,0,0.15)",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: "2.5rem",
-            color: "#2c2419",
-            textAlign: "center",
-          }}>
+          <div 
+            className="book-cover-right-under-inside"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              backgroundImage: "url('/environment/vintage_parchment_page.png')",
+              backgroundColor: "#fff2df",
+              backgroundSize: "cover",
+              borderTopRightRadius: "0.6rem",
+              borderBottomRightRadius: "0.6rem",
+              backfaceVisibility: "hidden",
+              transform: "rotateY(0deg)",
+              boxShadow: "inset 0 0 50px rgba(0,0,0,0.15)",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: "2.5rem",
+              color: "#2c2419",
+              textAlign: "center",
+            }}
+          >
             {currentPage === NUM_PAGES && !isClosed && (
               <>
                 <div className="vintage-page-border">
@@ -399,19 +402,22 @@ export default function BookAtlas({ setGlobalLocation }) {
           }} />
           
           {/* Inside Cover: rendered as a gorgeous parchment page when open */}
-          <div style={{
-            ...styles.coverRightBack,
-            backgroundImage: isClosed ? `url(${backCover})` : "url('/environment/vintage_parchment_page.png')",
-            backgroundColor: isClosed ? "transparent" : "#fff2df",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            transform: `rotateY(180deg) translateZ(${coverTurned ? '0.1px' : '12px'})`,
-            transition: "transform 1.8s cubic-bezier(.645,.045,.355,1)",
-            borderTopLeftRadius: coverTurned ? "0.6rem" : "0px",
-            borderBottomLeftRadius: coverTurned ? "0.6rem" : "0px",
-            borderTopRightRadius: coverTurned ? "0px" : "0.6rem",
-            borderBottomRightRadius: coverTurned ? "0px" : "0.6rem",
-          }}>
+          <div 
+            className="book-cover-right-back"
+            style={{
+              ...styles.coverRightBack,
+              backgroundImage: isClosed ? `url(${backCover})` : "url('/environment/vintage_parchment_page.png')",
+              backgroundColor: isClosed ? "transparent" : "#fff2df",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              transform: `rotateY(180deg) translateZ(${coverTurned ? '0.1px' : '12px'})`,
+              transition: "transform 1.8s cubic-bezier(.645,.045,.355,1)",
+              borderTopLeftRadius: coverTurned ? "0.6rem" : "0px",
+              borderBottomLeftRadius: coverTurned ? "0.6rem" : "0px",
+              borderTopRightRadius: coverTurned ? "0px" : "0.6rem",
+              borderBottomRightRadius: coverTurned ? "0px" : "0.6rem",
+            }}
+          >
             {!isClosed && (
               <>
                 <div className="vintage-page-border">

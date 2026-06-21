@@ -299,3 +299,55 @@
   transform: rotate(45deg);
   opacity: 0.6;
 }
+
+@media (max-width: 480px) {
+  .family-card {
+    width: 92vw;
+    padding: 20px 16px 24px;
+  }
+  .family-card-stage {
+    height: 180px;
+    margin-bottom: 12px;
+  }
+  .family-card-emblem {
+    width: 140px;
+    height: 140px;
+  }
+  .family-card-stage-glow {
+    width: 160px;
+    height: 160px;
+    filter: blur(25px);
+  }
+  .family-card-title {
+    font-size: 18px;
+  }
+  .family-card-role {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  .family-card-desc {
+    font-size: 12px;
+    line-height: 1.45;
+  }
+  .family-card-copy {
+    min-height: 125px;
+  }
+  .family-card-swatches {
+    margin: 12px 0 16px;
+    gap: 8px;
+  }
+  .family-card-swatch {
+    width: 24px;
+    height: 24px;
+  }
+  .family-card-cta {
+    padding: 10px 0;
+    font-size: 11px;
+  }
+  .family-cards-modal-close {
+    top: 15px;
+    right: 15px;
+    font-size: 0.75rem;
+    padding: 6px 12px;
+  }
+}

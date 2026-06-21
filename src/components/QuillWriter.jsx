@@ -15,6 +15,7 @@ export default function QuillWriter({
   feathterSrc,
   inkpotSrc
 }) {
+  const [isMobile, setIsMobile] = useState(false);
   const [phase, setPhase] = useState('idle'); // idle -> dipping -> traveling -> writing -> returning -> done
   const [displayedText, setDisplayedText] = useState('');
   const [featherPos, setFeatherPos] = useState({ x: 0, y: 0 });
@@ -28,8 +29,19 @@ export default function QuillWriter({
   const featherWidth = 120;
   const featherHeight = 120;
 
+  // Track viewport size for mobile responsiveness
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   // Compute exact target transform for the feather tip to align with the cursor span
   const updateFeatherPosition = () => {
+    if (isMobile) return;
     if (cursorRef.current && containerRef.current) {
       const cursorRect = cursorRef.current.getBoundingClientRect();
       const containerRect = containerRef.current.getBoundingClientRect();
@@ -53,6 +65,13 @@ export default function QuillWriter({
   };
 
   useEffect(() => {
+    if (isMobile) {
+      setPhase('done');
+      setDisplayedText(text);
+      if (onComplete) onComplete();
+      return;
+    }
+
     if (!active) {
       setPhase('idle');
       setDisplayedText('');
@@ -105,15 +124,50 @@ export default function QuillWriter({
       audioSynth.stopWritingLoop && audioSynth.stopWritingLoop();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active, text]);
+  }, [active, text, isMobile]);
 
   // Read layout metrics immediately after text render updates
   useLayoutEffect(() => {
-    if (phase === 'writing' || phase === 'traveling') {
+    if (!isMobile && (phase === 'writing' || phase === 'traveling')) {
       const timer = setTimeout(updateFeatherPosition, 0);
       return () => clearTimeout(timer);
     }
-  }, [displayedText, phase]);
+  }, [displayedText, phase, isMobile]);
+
+  // Fallback static layout for mobile devices
+  if (isMobile) {
+    return (
+      <div
+        style={{
+          width: '100%',
+          padding: '10px 0'
+        }}
+      >
+        <div
+          className="quill-writer-text"
+          style={{
+            fontFamily: "'CourierPolski', monospace",
+            fontSize: '0.88rem',
+            lineHeight: '1.45',
+            color: '#3d2f1f',
+            textTransform: 'uppercase',
+            letterSpacing: '0.04em',
+            textAlign: 'center',
+            whiteSpace: 'pre-wrap'
+          }}
+        >
+          {text}
+        </div>
+        <style>{`
+          @font-face {
+            font-family: 'CourierPolski';
+            src: url('/fonts/zai_CourierPolski1941.ttf') format('truetype');
+            font-display: swap;
+          }
+        `}</style>
+      </div>
+    );
+  }
 
   const getFeatherAnimate = () => {
     switch (phase) {
@@ -169,6 +223,7 @@ export default function QuillWriter({
     >
       {/* Dynamic typewriter text rendered in document flow */}
       <div
+        className="quill-writer-text"
         style={{
           fontFamily: "'CourierPolski', monospace",
           fontSize: '1rem',
@@ -224,7 +279,6 @@ export default function QuillWriter({
       />
 
       <style>{`
-      
           @font-face {
             font-family: 'CourierPolski';
             src: url('/fonts/zai_CourierPolski1941.ttf') format('truetype');
